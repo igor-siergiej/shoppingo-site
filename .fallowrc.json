@@ -12,13 +12,5 @@
     ".fallowrc.json"
   ],
   "ignoreUnresolvedImports": ["bun:test"],
-  "ignoreDependencies": [
-    "@astrojs/markdoc",
-    "@astrojs/react",
-    "@astrojs/sitemap",
-    "@keystatic/astro",
-    "@keystatic/core",
-    "@tailwindcss/vite",
-    "shadcn"
-  ]
+  "ignoreDependencies": ["@astrojs/sitemap", "@tailwindcss/vite"]
 }

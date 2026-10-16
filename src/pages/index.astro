@@ -1,34 +1,577 @@
 ---
-import Layout from '../layouts/Layout.astro';
+import { Image } from 'astro:assets';
+import Aisle from '@/components/Aisle.astro';
 import JsonLd from '@/components/JsonLd.astro';
+import Phone from '@/components/Phone.astro';
 import { siteConfig } from '@/config/site';
-import { Navbar } from '@/components/sections/Navbar';
-import { Hero } from '@/components/sections/Hero';
-import { Features } from '@/components/sections/Features';
-import { FAQ } from '@/components/sections/FAQ';
-import { Footer } from '@/components/sections/Footer';
-import { ScrollToTop } from '@/components/sections/ScrollToTop';
+import logo from '@/assets/logo.png';
+import discoverScreen from '@/assets/screens/discover.png';
+import listScreen from '@/assets/screens/list-items.png';
+import listsScreen from '@/assets/screens/lists.png';
+import mealPlanScreen from '@/assets/screens/meal-plan.png';
+import recipeScreen from '@/assets/screens/recipe-detail.png';
+import Layout from '../layouts/Layout.astro';
 
 export const prerender = true;
+
+const chores = ['Find the recipe', 'Write out the list', 'Send it to the house'];
+
+const aisles = [
+    {
+        id: 'lists',
+        sign: 'Lists',
+        title: 'One list, and everyone’s on it',
+        intro: 'Share a list with the people you live with. When someone adds oat milk at home, it appears on the phone of whoever is in the shop.',
+        features: [
+            'Changes show up for everyone straight away, with each member’s initials on the list.',
+            'Items sort themselves by aisle, so you walk the shop once.',
+            'Every item gets a small picture, so a glance is enough.',
+            'Add things by voice: “milk, eggs and two tins of tomatoes”.',
+            'Ticks made with no signal sync as soon as you’re back online.',
+            'Two recipes that both need garlic make one garlic row, not two.',
+        ],
+        screen: listsScreen,
+        screenAlt:
+            'Three shared shopping lists in Shoppingo, each showing the initials of the people it is shared with.',
+    },
+    {
+        id: 'recipes',
+        sign: 'Recipes',
+        title: 'Your recipes, with the list built in',
+        intro: 'Keep the recipes you actually cook in one place, then send their ingredients to a list with a few taps.',
+        features: [
+            'Import a recipe from any link. Shoppingo pulls out the ingredients and method, and you check them before saving.',
+            'On Android, share a recipe page from your browser straight into Shoppingo.',
+            'Change the number of portions and the quantities follow.',
+            'Convert measurements to metric or imperial.',
+            'Missing something? Ask for a substitute that works in that recipe.',
+            'Share recipes with friends, and keep cooking times, servings and tags with each one.',
+        ],
+        screen: recipeScreen,
+        screenAlt: 'A Spaghetti Aglio e Olio recipe in Shoppingo, with a photo and its list of ingredients.',
+    },
+    {
+        id: 'discover',
+        sign: 'Discover',
+        title: 'Over 3,600 recipes to start from',
+        intro: 'Stuck for ideas? Search a shared library and copy anything you like into your own recipes.',
+        features: [
+            'Search by name, with filters for cooking time, difficulty, tags and ingredients.',
+            'Use up an ingredient: type what’s about to go off and see recipes that use it.',
+            'Copy a recipe into your collection, then edit it to suit you.',
+            'Publish your own recipes to the library if you want others to find them.',
+        ],
+        screen: discoverScreen,
+        screenAlt: 'The Discover page in Shoppingo, listing recipes with cooking times, servings, difficulty and tags.',
+    },
+    {
+        id: 'week',
+        sign: 'The week',
+        title: 'Plan the week, then shop for it',
+        intro: 'Put recipes on the days you’ll cook them and Shoppingo works out what to buy.',
+        features: [
+            'Drop recipes onto days and set the portions for each meal.',
+            'Preview the shopping for the week and add it to a list in one go.',
+            'A shared calendar for household to-dos, with reminders on your phone.',
+        ],
+        screen: mealPlanScreen,
+        screenAlt: 'A weekly meal plan in Shoppingo, with Kimchi planned for Monday at two portions.',
+    },
+];
+
+const steps = [
+    'Copy the link to a recipe from any website.',
+    'Paste it into Shoppingo, or share the page to Shoppingo from your browser.',
+    'Check the ingredients and method it found, then save.',
+    'Tick the ingredients you need and add them to a list.',
+];
+
+const appSchema = {
+    '@type': 'SoftwareApplication',
+    name: siteConfig.name,
+    applicationCategory: 'LifestyleApplication',
+    operatingSystem: 'Web, iOS, Android',
+    url: siteConfig.appUrl,
+    description: siteConfig.description,
+    offers: { '@type': 'Offer', price: '0', priceCurrency: 'GBP' },
+    license: 'https://www.gnu.org/licenses/agpl-3.0.html',
+};
+
+const faqSchema = {
+    '@type': 'FAQPage',
+    mainEntity: siteConfig.faqs.map((faq) => ({
+        '@type': 'Question',
+        name: faq.question,
+        acceptedAnswer: { '@type': 'Answer', text: faq.answer },
+    })),
+};
+
+const year = new Date().getFullYear();
 ---
 
-<Layout title={siteConfig.name} description={siteConfig.description}>
-  {siteConfig.faqs.length > 0 && (
-    <JsonLd
-      schema={{
-        '@type': 'FAQPage',
-        mainEntity: siteConfig.faqs.map((faq) => ({
-          '@type': 'Question',
-          name: faq.question,
-          acceptedAnswer: { '@type': 'Answer', text: faq.answer },
-        })),
-      }}
-    />
-  )}
-  <Navbar client:load />
-  <Hero />
-  <Features />
-  <FAQ client:load />
-  <Footer />
-  <ScrollToTop client:load />
+<Layout title={siteConfig.title} description={siteConfig.description}>
+    <JsonLd schema={appSchema} />
+    <JsonLd schema={faqSchema} />
+
+    <header class="container topbar">
+        <a href="/" class="brand">
+            <Image src={logo} alt="" width={40} height={40} />
+            <span>Shoppingo</span>
+        </a>
+        <nav aria-label="Main">
+            <a href={siteConfig.repoUrl} class="nav-link">GitHub</a>
+            <a href={siteConfig.appUrl} class="button button-small">Open app</a>
+        </nav>
+    </header>
+
+    <section class="container hero" aria-labelledby="hero-title">
+        <div class="hero-copy">
+            <h1 id="hero-title" class="sr-only">Shoppingo: a shared shopping list that builds itself from your recipes</h1>
+            <ul class="chores" aria-hidden="true">
+                {
+                    chores.map((chore, index) => (
+                        <li style={`--i: ${index}`}>
+                            <span class="chore">
+                                {chore}
+                                <svg viewBox="0 0 100 20" preserveAspectRatio="none" class="strike">
+                                    <path d="M1 12 C 22 8, 48 14, 70 10 S 92 9, 99 11" pathLength="100" />
+                                </svg>
+                            </span>
+                        </li>
+                    ))
+                }
+                <li class="last" style={`--i: ${chores.length}`}>Go shopping.</li>
+            </ul>
+            <p class="lede">
+                Shoppingo turns your recipes into a shopping list, sorts it by aisle and keeps it in sync with everyone you
+                live with. It works in the shop even when there’s no signal.
+            </p>
+            <div class="actions">
+                <a href={siteConfig.appUrl} class="button">Open Shoppingo</a>
+                <a href={siteConfig.repoUrl} class="button button-quiet">See the code</a>
+            </div>
+            <p class="small-print">Free and open source. Install it from your browser on iPhone or Android.</p>
+        </div>
+        <div class="hero-screen">
+            <Phone src={listScreen} alt="A shared Groceries list in Shoppingo with items ticked off." eager />
+        </div>
+    </section>
+
+    <div class="container">
+        {aisles.map((aisle, index) => <Aisle {...aisle} flip={index % 2 === 1} />)}
+    </div>
+
+    <section class="band" aria-labelledby="steps-title">
+        <div class="container">
+            <h2 id="steps-title">From a link to a list</h2>
+            <ol class="steps">
+                {steps.map((step) => <li>{step}</li>)}
+            </ol>
+        </div>
+    </section>
+
+    <section class="container split" aria-labelledby="open-title">
+        <div>
+            <h2 id="open-title">Free, open source, and yours to run</h2>
+            <p>
+                Shoppingo is built in the open under the AGPL licence. Use the hosted version, or start your own copy on any
+                server with Docker. Bug reports, ideas and pull requests are welcome.
+            </p>
+            <div class="actions">
+                <a href={siteConfig.repoUrl} class="button">View on GitHub</a>
+                <a href={`${siteConfig.repoUrl}/issues`} class="button button-quiet">Report a bug or suggest an idea</a>
+            </div>
+        </div>
+        <pre class="terminal" aria-label="Commands to self-host Shoppingo"><code><span class="prompt">$</span> git clone https://github.com/igor-siergiej/shoppingo
+<span class="prompt">$</span> cd shoppingo/selfhost
+<span class="prompt">$</span> cp .env.example .env
+<span class="prompt">$</span> docker compose up -d</code></pre>
+    </section>
+
+    <section class="container faq" aria-labelledby="faq-title">
+        <h2 id="faq-title">Questions</h2>
+        <div class="faq-list">
+            {
+                siteConfig.faqs.map((faq) => (
+                    <details>
+                        <summary>{faq.question}</summary>
+                        <p>{faq.answer}</p>
+                    </details>
+                ))
+            }
+        </div>
+    </section>
+
+    <footer class="footer">
+        <div class="container footer-inner">
+            <p>© {year} Shoppingo. Open source under the AGPL-3.0 licence.</p>
+            <nav aria-label="Footer">
+                <a href={siteConfig.appUrl}>Open app</a>
+                <a href={siteConfig.repoUrl}>GitHub</a>
+                <a href={`${siteConfig.repoUrl}/issues`}>Issues</a>
+            </nav>
+        </div>
+    </footer>
 </Layout>
+
+<style>
+    .topbar {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 1rem;
+        padding-block: 1.25rem;
+    }
+
+    .brand {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.6rem;
+        color: var(--ink);
+        font-family: var(--font-display);
+        font-size: 1.35rem;
+        font-weight: 700;
+        text-decoration: none;
+    }
+
+    .brand :global(img) {
+        border-radius: 0.6rem;
+    }
+
+    nav {
+        display: flex;
+        align-items: center;
+        gap: 1.25rem;
+    }
+
+    .nav-link {
+        display: none;
+        color: var(--ink);
+        font-weight: 600;
+        text-decoration: none;
+    }
+
+    @media (min-width: 480px) {
+        .nav-link {
+            display: inline;
+        }
+    }
+
+    .nav-link:hover {
+        text-decoration: underline;
+        text-underline-offset: 4px;
+    }
+
+    .button {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        min-height: 3rem;
+        padding: 0.7rem 1.4rem;
+        border: 2px solid var(--forest);
+        border-radius: 999px;
+        background: var(--forest);
+        color: var(--on-forest);
+        font-weight: 700;
+        text-align: center;
+        text-decoration: none;
+        transition: background-color 0.15s ease;
+    }
+
+    .button:hover {
+        background: var(--forest-deep);
+        border-color: var(--forest-deep);
+    }
+
+    .button-quiet {
+        background: transparent;
+        color: var(--ink);
+        border-color: var(--rule);
+    }
+
+    .button-quiet:hover {
+        background: var(--paper-deep);
+        border-color: var(--ink-soft);
+    }
+
+    .button-small {
+        min-height: 2.5rem;
+        padding: 0.4rem 1.1rem;
+        font-size: 0.95rem;
+        white-space: nowrap;
+    }
+
+    .hero {
+        display: grid;
+        gap: 3rem;
+        align-items: center;
+        padding-block: 2.5rem 4.5rem;
+    }
+
+    @media (min-width: 860px) {
+        .hero {
+            grid-template-columns: 1.25fr 0.75fr;
+            padding-block: 4rem 6rem;
+        }
+    }
+
+    .hero-copy {
+        container-type: inline-size;
+    }
+
+    .hero-screen {
+        display: flex;
+        justify-content: center;
+    }
+
+    /* The hero headline is a to-do list that gets crossed off, the way you'd cross off a paper shopping list. */
+    .chores {
+        margin: 0;
+        padding: 0;
+        list-style: none;
+        font-family: var(--font-display);
+        /* Sized to the column so the longest line never wraps: a wrapped line would break its strike-through. */
+        font-size: clamp(1.6rem, 10.2cqi, 4.1rem);
+        font-weight: 700;
+        line-height: 1.08;
+        letter-spacing: -0.03em;
+    }
+
+    .chore {
+        position: relative;
+        display: inline-block;
+        white-space: nowrap;
+        color: var(--ink-soft);
+        animation: fade-done 0.4s ease forwards;
+        animation-delay: calc(0.5s + var(--i) * 0.45s);
+    }
+
+    .strike {
+        position: absolute;
+        left: -0.1em;
+        top: 50%;
+        width: calc(100% + 0.2em);
+        height: 0.4em;
+        transform: translateY(-40%);
+        overflow: visible;
+    }
+
+    .strike path {
+        fill: none;
+        stroke: var(--forest);
+        stroke-width: 5;
+        stroke-linecap: round;
+        stroke-dasharray: 100;
+        stroke-dashoffset: 100;
+        animation: draw 0.45s cubic-bezier(0.6, 0, 0.3, 1) forwards;
+        animation-delay: calc(0.3s + var(--i) * 0.45s);
+    }
+
+    .last {
+        color: var(--forest);
+    }
+
+    @keyframes draw {
+        to {
+            stroke-dashoffset: 0;
+        }
+    }
+
+    @keyframes fade-done {
+        to {
+            color: color-mix(in oklch, var(--ink-soft) 65%, var(--paper));
+        }
+    }
+
+    .lede {
+        max-width: 46ch;
+        margin: 2rem 0 0;
+        font-size: 1.2rem;
+        line-height: 1.55;
+    }
+
+    .actions {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.75rem;
+        margin-top: 2rem;
+    }
+
+    .small-print {
+        margin: 1.25rem 0 0;
+        color: var(--ink-soft);
+        font-size: 0.95rem;
+    }
+
+    h2 {
+        margin: 0;
+        font-family: var(--font-display);
+        font-size: clamp(2rem, 1.4rem + 2.6vw, 3.1rem);
+        font-weight: 700;
+        line-height: 1.05;
+        letter-spacing: -0.02em;
+        text-wrap: balance;
+    }
+
+    .band {
+        margin-top: 2rem;
+        padding-block: 5rem;
+        background: var(--forest);
+        color: var(--on-forest);
+    }
+
+    .steps {
+        display: grid;
+        gap: 2rem;
+        margin: 2.5rem 0 0;
+        padding: 0;
+        list-style: none;
+        counter-reset: step;
+    }
+
+    @media (min-width: 760px) {
+        .steps {
+            grid-template-columns: repeat(4, 1fr);
+        }
+    }
+
+    .steps li {
+        counter-increment: step;
+        font-size: 1.1rem;
+        line-height: 1.5;
+    }
+
+    .steps li::before {
+        content: counter(step);
+        display: block;
+        margin-bottom: 0.5rem;
+        font-family: var(--font-display);
+        font-size: 3.5rem;
+        font-weight: 700;
+        line-height: 1;
+        color: var(--sprout);
+    }
+
+    .split {
+        display: grid;
+        gap: 2.5rem;
+        align-items: center;
+        padding-block: 6rem;
+    }
+
+    @media (min-width: 860px) {
+        .split {
+            grid-template-columns: 1fr 1fr;
+            gap: 4rem;
+        }
+    }
+
+    .split > * {
+        min-width: 0;
+    }
+
+    .split p {
+        max-width: 50ch;
+        margin: 1rem 0 0;
+        color: var(--ink-soft);
+        font-size: 1.125rem;
+    }
+
+    .terminal {
+        margin: 0;
+        padding: 1.5rem;
+        overflow-x: auto;
+        border-radius: 1rem;
+        background: var(--ink);
+        color: var(--paper);
+        font-size: 0.9rem;
+        line-height: 1.8;
+    }
+
+    .prompt {
+        color: var(--butter);
+        user-select: none;
+    }
+
+    .faq {
+        display: grid;
+        gap: 2rem;
+        padding-block: 2rem 6rem;
+        border-top: 2px dashed var(--rule);
+        padding-top: 5rem;
+    }
+
+    @media (min-width: 860px) {
+        .faq {
+            grid-template-columns: 0.8fr 1.2fr;
+            gap: 4rem;
+        }
+    }
+
+    .faq-list {
+        display: grid;
+    }
+
+    details {
+        border-bottom: 1px solid var(--rule);
+    }
+
+    summary {
+        display: flex;
+        justify-content: space-between;
+        gap: 1rem;
+        padding-block: 1.1rem;
+        cursor: pointer;
+        font-weight: 700;
+        font-size: 1.1rem;
+        list-style: none;
+    }
+
+    summary::-webkit-details-marker {
+        display: none;
+    }
+
+    summary::after {
+        content: '+';
+        flex: none;
+        color: var(--forest);
+        font-size: 1.5rem;
+        line-height: 1;
+        transition: transform 0.2s ease;
+    }
+
+    details[open] summary::after {
+        transform: rotate(45deg);
+    }
+
+    details p {
+        max-width: 60ch;
+        margin: 0 0 1.25rem;
+        color: var(--ink-soft);
+    }
+
+    .footer {
+        border-top: 1px solid var(--rule);
+        background: var(--paper-deep);
+        font-size: 0.95rem;
+    }
+
+    .footer-inner {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        justify-content: space-between;
+        gap: 1rem;
+        padding-block: 2rem;
+    }
+
+    .footer p {
+        margin: 0;
+        color: var(--ink-soft);
+    }
+
+    .footer a {
+        color: var(--ink);
+        font-weight: 600;
+    }
+</style>
