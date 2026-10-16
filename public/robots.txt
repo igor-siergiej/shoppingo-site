@@ -1,0 +1,5 @@
+User-agent: *
+Allow: /
+Disallow: /keystatic
+
+Sitemap: https://shoppingo.imapps.uk/sitemap-index.xml

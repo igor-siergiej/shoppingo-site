@@ -1,0 +1,17 @@
+.astro
+.playwright-mcp
+/dist
+/node_modules
+/test-results
+/playwright-report
+
+.env
+.env.*
+!.env.example
+
+.kanban-cli.json
+
+infra/.terraform/
+infra/*.tfstate
+infra/*.tfstate.*
+infra/*.tfvars

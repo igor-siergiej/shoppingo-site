@@ -1,0 +1,24 @@
+{
+  "ignorePatterns": [
+    "**/*.test.ts",
+    "**/*.test.tsx",
+    "**/*.spec.ts",
+    "**/*.integration.test.ts",
+    "**/playwright.config.ts",
+    "**/dist/**",
+    "**/build/**",
+    "**/coverage/**",
+    ".fallow/**",
+    ".fallowrc.json"
+  ],
+  "ignoreUnresolvedImports": ["bun:test"],
+  "ignoreDependencies": [
+    "@astrojs/markdoc",
+    "@astrojs/react",
+    "@astrojs/sitemap",
+    "@keystatic/astro",
+    "@keystatic/core",
+    "@tailwindcss/vite",
+    "shadcn"
+  ]
+}
