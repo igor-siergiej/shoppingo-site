@@ -1,3 +1,10 @@
+## [1.0.1](https://github.com/igor-siergiej/shoppingo-site/compare/v1.0.0...v1.0.1) (2026-10-16)
+
+
+### Bug Fixes
+
+* don't repeat the site name in the homepage title ([#2](https://github.com/igor-siergiej/shoppingo-site/issues/2)) ([efa6c15](https://github.com/igor-siergiej/shoppingo-site/commit/efa6c1541c604e43ac333eadb7dca53eff9f0ee9))
+
 # 1.0.0 (2026-10-16)
 
 
