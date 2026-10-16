@@ -1,13 +1,26 @@
 import { expect, test } from '@playwright/test';
 
-test('homepage has a title and no console errors', async ({ page }) => {
+test('homepage renders the pitch, links to the app and has no console errors @smoke', async ({ page }) => {
     const errors: string[] = [];
     page.on('console', (msg) => {
         if (msg.type() === 'error') errors.push(msg.text());
     });
+    page.on('pageerror', (err) => errors.push(err.message));
 
     await page.goto('/');
 
-    await expect(page).toHaveTitle(/.+/);
+    await expect(page).toHaveTitle(/Shoppingo/);
+    await expect(page.getByRole('heading', { level: 1 })).toHaveText(/shared shopping list/i);
+    await expect(page.getByRole('link', { name: 'Open Shoppingo' })).toHaveAttribute('href', /^https:\/\//);
+    await expect(page.getByRole('heading', { level: 2, name: 'From a link to a list' })).toBeVisible();
     expect(errors).toEqual([]);
+});
+
+test('FAQ answers open on click', async ({ page }) => {
+    await page.goto('/');
+
+    const question = page.getByText('Does it work without signal in the shop?');
+    await question.click();
+
+    await expect(page.getByText(/tick items off with no connection/)).toBeVisible();
 });
