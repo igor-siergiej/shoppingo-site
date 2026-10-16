@@ -12,7 +12,7 @@ const { title, description = siteConfig.description, image = siteConfig.defaultO
 
 const canonicalUrl = new URL(Astro.url.pathname, siteConfig.url).toString();
 const imageUrl = new URL(image, siteConfig.url).toString();
-const fullTitle = title === siteConfig.name ? title : `${title} | ${siteConfig.name}`;
+const fullTitle = title.includes(siteConfig.name) ? title : `${title} | ${siteConfig.name}`;
 ---
 
 <title>{fullTitle}</title>
