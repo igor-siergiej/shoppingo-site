@@ -1,5 +1,5 @@
 @import "tailwindcss";
-@import "@fontsource-variable/bricolage-grotesque/opsz.css";
+@import "@fontsource-variable/bricolage-grotesque";
 @import "@fontsource-variable/montserrat";
 
 /* Palette taken from the Shoppingo app's own tokens so the site and the app read as one product. */
@@ -38,7 +38,6 @@
     --color-foreground: var(--ink);
     --color-primary: var(--forest);
     --color-muted-foreground: var(--ink-soft);
-    --color-ring: var(--forest);
 }
 
 @utility container {
