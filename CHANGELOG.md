@@ -1,3 +1,10 @@
+# [1.2.0](https://github.com/igor-siergiej/shoppingo-site/compare/v1.1.0...v1.2.0) (2026-10-18)
+
+
+### Features
+
+* link "Try it without an account" from the hero ([#4](https://github.com/igor-siergiej/shoppingo-site/issues/4)) ([59ebd25](https://github.com/igor-siergiej/shoppingo-site/commit/59ebd254bcefaf6b1ebf9c053ab0e08ff4e7116a)), closes [#253](https://github.com/igor-siergiej/shoppingo-site/issues/253)
+
 # [1.1.0](https://github.com/igor-siergiej/shoppingo-site/compare/v1.0.1...v1.1.0) (2026-10-18)
 
 
