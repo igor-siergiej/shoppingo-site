@@ -1,3 +1,10 @@
+# [1.1.0](https://github.com/igor-siergiej/shoppingo-site/compare/v1.0.1...v1.1.0) (2026-10-18)
+
+
+### Features
+
+* add public privacy notice at /privacy ([#3](https://github.com/igor-siergiej/shoppingo-site/issues/3)) ([d8193d0](https://github.com/igor-siergiej/shoppingo-site/commit/d8193d0051cbf4cf417e959b912e4b38914ff05b)), closes [#73](https://github.com/igor-siergiej/shoppingo-site/issues/73)
+
 ## [1.0.1](https://github.com/igor-siergiej/shoppingo-site/compare/v1.0.0...v1.0.1) (2026-10-16)
 
 
