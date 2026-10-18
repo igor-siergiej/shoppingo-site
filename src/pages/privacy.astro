@@ -1,0 +1,745 @@
+---
+import Layout from '@/layouts/Layout.astro';
+
+export const prerender = true;
+
+const lastUpdated = '2026-10-18';
+
+const inventory = [
+    {
+        category: 'Account credentials',
+        source: 'kivo (the auth service)',
+        what: 'Username and argon2id password hash; refresh token held in an httpOnly cookie.',
+        why: 'To run the service for the account holder.',
+    },
+    {
+        category: 'Session telemetry',
+        source: 'kivo',
+        what: 'Username on failed logins (no password). Sessions have a TTL.',
+        why: 'Abuse detection and session management.',
+    },
+    {
+        category: 'User data in MongoDB',
+        source: 'shoppingo-api',
+        what: 'Lists, recipes, todos, labels, meal plans, push subscriptions, friendships, pairing codes, Discover publications and reports, item categories.',
+        why: 'To provide the app’s features to the account holder.',
+    },
+    {
+        category: 'Uploaded photos',
+        source: 'MinIO (object store)',
+        what: 'Recipe and item photos uploaded by users.',
+        why: 'To attach images to recipes and list items.',
+    },
+    {
+        category: 'Front-end logs',
+        source: 'Loki',
+        what: 'userId, userAgent, URL and server-observed clientIp. No list-item text, recipe text or transcripts.',
+        why: 'Operational debugging and abuse response.',
+    },
+    {
+        category: 'Voice transcripts and AI requests',
+        source: 'fal.ai',
+        what: 'Speech-to-text transcripts from voice input, recipe-import text, substitution/categorisation requests and image prompts.',
+        why: 'To convert voice and links into structured items and recipes.',
+    },
+    {
+        category: 'Push notifications',
+        source: 'FCM (Android) / Mozilla autopush (Firefox)',
+        what: 'Push endpoint and the notification payload.',
+        why: 'To deliver reminders and shared-list updates to opted-in devices.',
+    },
+    {
+        category: 'Network traffic',
+        source: 'Cloudflare (tunnel and proxy)',
+        what: 'Every request that reaches the hosted stack.',
+        why: 'Routing, DDoS protection and caching.',
+    },
+    {
+        category: 'Aggregate analytics',
+        source: 'Self-hosted Umami',
+        what: 'Page views and referrers on shoppingo.imapps.uk and the hosted app. No personal identifiers.',
+        why: 'To measure which parts of the product are used.',
+    },
+    {
+        category: 'Public Discover publications',
+        source: 'shoppingo-api',
+        what: 'The username is shown only if the user ticks “show name”; the cover photo is copied to a public key.',
+        why: 'To make shared recipes findable in Discover.',
+    },
+    {
+        category: 'Display fonts',
+        source: 'Bundled (Bricolage Grotesque and Montserrat Variable via @fontsource)',
+        what: 'Font files served from the site’s own origin. No third-party font CDN is contacted.',
+        why: 'Typography without sending visitor IP to a font provider.',
+    },
+];
+
+const lawfulBasis = [
+    {
+        purpose: 'Running the service (lists, recipes, meal plans, sharing, push notifications)',
+        basis: 'Contract',
+        notes: 'Processing is required to deliver what the account holder signed up for.',
+    },
+    {
+        purpose: 'Authentication telemetry and operational logs',
+        basis: 'Legitimate interests',
+        notes: 'Needed to keep the service secure and operable. No special-category data.',
+    },
+    {
+        purpose: 'Aggregate analytics on the hosted sites',
+        basis: 'Statistical exception (UK GDPR §4(2)), with opt-out',
+        notes: 'Self-hosted Umami produces aggregate reports. The opt-out switch lives in app Settings (owned by shoppingo-gdpr-sweep).',
+    },
+    {
+        purpose: 'Session replay and any identified analytics',
+        basis: 'Consent',
+        notes: 'Off by default. shoppingo-gdpr-sweep prompts once and stores the choice.',
+    },
+    {
+        purpose: 'Voice transcripts sent to fal.ai',
+        basis: 'Consent (explicit, one-time prompt at first microphone use)',
+        notes: 'The microphone is not opened until the user accepts.',
+    },
+];
+
+const processors = [
+    {
+        name: 'fal.ai',
+        role: 'Speech-to-text and generative models for voice input, recipe import, substitution, categorisation and image generation.',
+        location: 'United States',
+        transferMechanism: 'EU Standard Contractual Clauses and an executed DPA.',
+        data: 'Voice transcripts, recipe-import text, prompts derived from user content. No account credentials.',
+    },
+    {
+        name: 'Cloudflare',
+        role: 'Tunnel, proxy, caching and DDoS protection in front of the hosted stack.',
+        location: 'United States / global edge',
+        transferMechanism: 'EU SCCs and ongoing adequacy decisions where applicable.',
+        data: 'Every request reaching shoppingo.imapps.uk and the hosted app.',
+    },
+    {
+        name: 'Google Firebase Cloud Messaging (FCM)',
+        role: 'Delivery of push notifications on Android.',
+        location: 'United States',
+        transferMechanism: 'EU SCCs (Google Cloud DPA).',
+        data: 'Push token and notification payload.',
+    },
+    {
+        name: 'Mozilla autopush',
+        role: 'Delivery of push notifications on Firefox.',
+        location: 'United States',
+        transferMechanism: 'EU SCCs (Mozilla DPA).',
+        data: 'Push token and notification payload.',
+    },
+    {
+        name: 'Self-hosted Umami',
+        role: 'Aggregate, cookie-less analytics on shoppingo.imapps.uk and the hosted app.',
+        location: 'Server in the EU (imapps.uk)',
+        transferMechanism: 'No transfer — self-hosted.',
+        data: 'Page path, referrer, country (derived from IP), browser family. No personal identifiers.',
+    },
+    {
+        name: 'Self-hosted Loki',
+        role: 'Front-end log retention and search.',
+        location: 'Server in the EU (imapps.uk)',
+        transferMechanism: 'No transfer — self-hosted.',
+        data: 'userId, userAgent, URL, server-observed clientIp.',
+    },
+    {
+        name: 'Self-hosted MinIO',
+        role: 'Object storage for user-uploaded photos.',
+        location: 'Server in the EU (imapps.uk)',
+        transferMechanism: 'No transfer — self-hosted.',
+        data: 'Recipe and item photos uploaded by users.',
+    },
+];
+
+const retention = [
+    {
+        item: 'Front-end logs (Loki)',
+        period: '30 days',
+        source: 'foundry/monitoring/config/loki/loki.yml retention_period: 30d',
+    },
+    {
+        item: 'MongoDB backups (mongodump)',
+        period: 'Until pruned at RETENTION_DAYS',
+        source: 'foundry/docs/homelab.md — nightly mongodump; MinIO is not backed up.',
+    },
+    {
+        item: 'Account data and content',
+        period: 'Until the user closes their account',
+        source: 'shoppingo-gdpr-sweep will add account deletion (typed confirmation) and data export.',
+    },
+    {
+        item: 'Umami aggregate analytics',
+        period: 'As configured on the Umami instance',
+        source: 'Self-hosted Umami retention setting.',
+    },
+    { item: 'Session replays', period: '30 days', source: 'shoppingo-gdpr-sweep — replay storage TBD by that task.' },
+    {
+        item: 'Fal.ai inputs',
+        period: 'Per fal.ai’s published retention',
+        source: 'fal.ai DPA — confirmed before activation.',
+    },
+];
+
+const storage = [
+    {
+        name: 'kivo refresh-token cookie',
+        kind: 'Strictly necessary cookie',
+        purpose: 'Holds the signed refresh token used to mint access tokens. httpOnly, Secure, SameSite=Strict.',
+        lifetime: 'Rolling; expires when the session ends or is revoked.',
+    },
+    {
+        name: 'shoppingo:config',
+        kind: 'localStorage',
+        purpose: 'Persisted UI preferences (e.g. tutorial completion flags).',
+        lifetime: 'Until cleared by the user.',
+    },
+    {
+        name: 'theme',
+        kind: 'localStorage',
+        purpose: 'User-chosen colour theme (light / dark / system).',
+        lifetime: 'Until cleared by the user.',
+    },
+    {
+        name: 'unitSystem',
+        kind: 'localStorage',
+        purpose: 'Metric or imperial units shown across the app.',
+        lifetime: 'Until cleared by the user.',
+    },
+    {
+        name: 'shoppingo.voiceKeepListening',
+        kind: 'localStorage',
+        purpose: 'Whether voice input stays open after a successful transcript.',
+        lifetime: 'Until cleared by the user.',
+    },
+    {
+        name: 'release-notes-seen',
+        kind: 'localStorage',
+        purpose: 'Records which in-app release notes have already been shown.',
+        lifetime: 'Until cleared by the user.',
+    },
+    {
+        name: 'Umami session',
+        kind: 'Cookie-less',
+        purpose: 'Aggregate analytics visit grouping. Held only on the self-hosted Umami instance.',
+        lifetime: 'Session.',
+    },
+];
+
+const rights = [
+    { right: 'Access', what: 'A copy of the personal data we hold about you.' },
+    { right: 'Rectification', what: 'Correction of inaccurate or incomplete data.' },
+    {
+        right: 'Erasure',
+        what: 'Deletion of your account and associated content (lists, recipes, photos, friendships, publications). Account deletion will require a typed confirmation and is being added by shoppingo-gdpr-sweep.',
+    },
+    { right: 'Restriction', what: 'Pausing processing while a complaint or query is resolved.' },
+    {
+        right: 'Portability',
+        what: 'A JSON download of your lists, items, recipes, meal plans, todos and friends. Provided by shoppingo-gdpr-sweep.',
+    },
+    {
+        right: 'Objection',
+        what: 'Right to object to processing based on legitimate interests, including aggregate analytics.',
+    },
+    {
+        right: 'Withdraw consent',
+        what: 'Where processing rests on consent (session replays, microphone access), you can withdraw it at any time.',
+    },
+    {
+        right: 'Complain',
+        what: 'Right to lodge a complaint with the Information Commissioner’s Office (ico.org.uk) if you believe your data has been handled incorrectly.',
+    },
+];
+---
+
+<Layout
+    title="Privacy notice"
+    description="What Shoppingo collects, why, where it is stored and the choices you have. The hosted service is run by the project maintainer."
+>
+    <meta slot="head" name="robots" content="index,follow" />
+
+    <article class="container privacy" aria-labelledby="privacy-title">
+        <header class="hero">
+            <p class="eyebrow">Legal</p>
+            <h1 id="privacy-title">Privacy notice</h1>
+            <p class="lede">
+                This notice explains what Shoppingo collects, why, where it is stored and what you can do with it. It
+                applies to shoppingo.imapps.uk (the landing site) and the hosted app that lives under the same domain.
+            </p>
+            <p class="updated">Last updated: {lastUpdated}.</p>
+        </header>
+
+        <nav class="toc" aria-label="On this page">
+            <h2>On this page</h2>
+            <ol>
+                <li><a href="#who">Who runs Shoppingo</a></li>
+                <li><a href="#what">What we collect</a></li>
+                <li><a href="#why">Why we collect it (lawful basis)</a></li>
+                <li><a href="#processors">Processors and where data goes</a></li>
+                <li><a href="#retention">How long we keep it</a></li>
+                <li><a href="#rights">Your rights and how to use them</a></li>
+                <li><a href="#storage">Cookies and local storage</a></li>
+                <li><a href="#changes">Changes to this notice</a></li>
+            </ol>
+        </nav>
+
+        <section aria-labelledby="who">
+            <h2 id="who">Who runs Shoppingo</h2>
+            <p>
+                Shoppingo is an open-source project. The hosted version at <code>shoppingo.imapps.uk</code> is operated
+                by the project maintainer as a small personal service. It is not a commercial product.
+            </p>
+            <dl class="contact">
+                <div>
+                    <dt>Controller</dt>
+                    <dd>The maintainer of the <a href="https://github.com/igor-siergiej/shoppingo">Shoppingo repository</a>.</dd>
+                </div>
+                <div>
+                    <dt>Contact</dt>
+                    <dd><a href="mailto:igorsiergiej@gmail.com">igorsiergiej@gmail.com</a></dd>
+                </div>
+                <div>
+                    <dt>Supervisory authority</dt>
+                    <dd>Information Commissioner’s Office (<a href="https://ico.org.uk">ico.org.uk</a>) for UK residents; the equivalent authority in your country if you live elsewhere.</dd>
+                </div>
+            </dl>
+        </section>
+
+        <section aria-labelledby="what">
+            <h2 id="what">What we collect</h2>
+            <p>
+                The table below lists every category of personal data the hosted stack handles. It is rebuilt from the
+                same inventory used by <code>shoppingo-gdpr-sweep</code>; the wording is deliberately close to that
+                document so the two stay in sync.
+            </p>
+            <div class="table-wrap">
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th scope="col">Category</th>
+                            <th scope="col">Source</th>
+                            <th scope="col">What is stored</th>
+                            <th scope="col">Why</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {
+                            inventory.map((row) => (
+                                <tr>
+                                    <th scope="row">{row.category}</th>
+                                    <td>{row.source}</td>
+                                    <td>{row.what}</td>
+                                    <td>{row.why}</td>
+                                </tr>
+                            ))
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <section aria-labelledby="why">
+            <h2 id="why">Why we collect it (lawful basis)</h2>
+            <p>
+                Each purpose has a lawful basis under the UK GDPR. Where processing rests on consent, that consent is
+                collected in-app before any data is sent to the third party.
+            </p>
+            <div class="table-wrap">
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th scope="col">Purpose</th>
+                            <th scope="col">Lawful basis</th>
+                            <th scope="col">Notes</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {
+                            lawfulBasis.map((row) => (
+                                <tr>
+                                    <th scope="row">{row.purpose}</th>
+                                    <td>{row.basis}</td>
+                                    <td>{row.notes}</td>
+                                </tr>
+                            ))
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <section aria-labelledby="processors">
+            <h2 id="processors">Processors and where data goes</h2>
+            <p>
+                The hosted stack uses a small number of processors. Each is listed with what they do, where they sit,
+                the transfer mechanism used for any cross-border data flow, and the data they see.
+            </p>
+            <div class="table-wrap">
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th scope="col">Processor</th>
+                            <th scope="col">Role</th>
+                            <th scope="col">Location</th>
+                            <th scope="col">Transfer mechanism</th>
+                            <th scope="col">Data seen</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {
+                            processors.map((row) => (
+                                <tr>
+                                    <th scope="row">{row.name}</th>
+                                    <td>{row.role}</td>
+                                    <td>{row.location}</td>
+                                    <td>{row.transferMechanism}</td>
+                                    <td>{row.data}</td>
+                                </tr>
+                            ))
+                        }
+                    </tbody>
+                </table>
+            </div>
+            <p class="footnote">
+                Google Fonts is no longer used. The bundled <code>@fontsource-variable/bricolage-grotesque</code> and
+                <code>@fontsource-variable/montserrat</code> packages ship font files from the site’s own origin.
+            </p>
+        </section>
+
+        <section aria-labelledby="retention">
+            <h2 id="retention">How long we keep it</h2>
+            <p>
+                Retention is the shortest the purpose allows. The values below mirror the operational configuration of
+                the hosted stack.
+            </p>
+            <div class="table-wrap">
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th scope="col">Item</th>
+                            <th scope="col">Retention</th>
+                            <th scope="col">Where it is set</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {
+                            retention.map((row) => (
+                                <tr>
+                                    <th scope="row">{row.item}</th>
+                                    <td>{row.period}</td>
+                                    <td>{row.source}</td>
+                                </tr>
+                            ))
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <section aria-labelledby="rights">
+            <h2 id="rights">Your rights and how to use them</h2>
+            <p>
+                The UK GDPR gives you the rights below. Exercising them is free and we reply within one calendar month.
+                Where the request is complex, we may write to extend that by up to two further months and explain why.
+            </p>
+            <div class="table-wrap">
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th scope="col">Right</th>
+                            <th scope="col">What it means</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {
+                            rights.map((row) => (
+                                <tr>
+                                    <th scope="row">{row.right}</th>
+                                    <td>{row.what}</td>
+                                </tr>
+                            ))
+                        }
+                    </tbody>
+                </table>
+            </div>
+            <p>
+                To exercise any of these rights, email <a href="mailto:igorsiergiej@gmail.com">igorsiergiej@gmail.com</a>
+                from the address on your account. For deletion and data export, the in-app controls under
+                <em>Settings → Account</em> are the fastest path once <code>shoppingo-gdpr-sweep</code> ships.
+            </p>
+        </section>
+
+        <section aria-labelledby="storage">
+            <h2 id="storage">Cookies and local storage</h2>
+            <p>
+                Cookies are kept to the minimum. The single cookie set by the service is strictly necessary for
+                authentication; everything else is local storage on the user’s device, which the user can clear at any
+                time.
+            </p>
+            <div class="table-wrap">
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th scope="col">Name</th>
+                            <th scope="col">Kind</th>
+                            <th scope="col">Purpose</th>
+                            <th scope="col">Lifetime</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {
+                            storage.map((row) => (
+                                <tr>
+                                    <th scope="row">{row.name}</th>
+                                    <td>{row.kind}</td>
+                                    <td>{row.purpose}</td>
+                                    <td>{row.lifetime}</td>
+                                </tr>
+                            ))
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <section aria-labelledby="changes">
+            <h2 id="changes">Changes to this notice</h2>
+            <p>
+                Material changes are listed at the top with the date they take effect, and the in-app release notes
+                link here when something you can act on changes. Earlier versions are kept in the
+                <a href={`https://github.com/igor-siergiej/shoppingo-site`}>site repository</a>.
+            </p>
+        </section>
+
+        <p class="back-link"><a href="/">← Back to the Shoppingo homepage</a></p>
+    </article>
+</Layout>
+
+<style>
+    .privacy {
+        padding-block: 3rem 5rem;
+    }
+
+    .privacy section {
+        margin-top: 3.5rem;
+    }
+
+    .hero {
+        max-width: 60rem;
+        padding-block: 1rem 2.5rem;
+        border-bottom: 2px dashed var(--rule);
+    }
+
+    .eyebrow {
+        margin: 0;
+        font-family: var(--font-display);
+        color: var(--forest);
+        font-size: 0.95rem;
+        font-weight: 700;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+    }
+
+    h1 {
+        margin: 0.5rem 0 0;
+        font-family: var(--font-display);
+        font-size: clamp(2.4rem, 1.6rem + 4vw, 3.8rem);
+        font-weight: 800;
+        letter-spacing: -0.02em;
+        line-height: 1.05;
+        text-wrap: balance;
+    }
+
+    .hero .lede {
+        max-width: 50rem;
+        margin: 1.25rem 0 0;
+        font-size: 1.2rem;
+        color: var(--ink-soft);
+        line-height: 1.55;
+    }
+
+    .updated {
+        margin: 1rem 0 0;
+        color: var(--ink-soft);
+        font-size: 0.95rem;
+    }
+
+    h2 {
+        margin: 0 0 1rem;
+        font-family: var(--font-display);
+        font-size: clamp(1.6rem, 1.2rem + 1.8vw, 2.2rem);
+        font-weight: 700;
+        letter-spacing: -0.015em;
+        line-height: 1.1;
+        text-wrap: balance;
+    }
+
+    p {
+        max-width: 60rem;
+        margin: 0 0 1rem;
+        color: var(--ink);
+        line-height: 1.6;
+    }
+
+    a {
+        color: var(--forest-deep);
+    }
+
+    a:hover {
+        color: var(--forest);
+    }
+
+    code {
+        padding: 1px 6px;
+        border-radius: 4px;
+        background: var(--paper-deep);
+        color: var(--ink);
+        font-family: ui-monospace, SFMono-Regular, monospace;
+        font-size: 0.92em;
+    }
+
+    .toc {
+        margin-top: 2.5rem;
+        padding: 1.25rem 1.5rem;
+        border-radius: 0.75rem;
+        background: var(--paper-deep);
+        max-width: 60rem;
+    }
+
+    .toc h2 {
+        margin: 0 0 0.75rem;
+        font-size: 1rem;
+        font-family: var(--font-sans);
+        font-weight: 700;
+        letter-spacing: 0.05em;
+        text-transform: uppercase;
+        color: var(--ink-soft);
+    }
+
+    .toc ol {
+        margin: 0;
+        padding-left: 1.25rem;
+        display: grid;
+        gap: 0.4rem;
+    }
+
+    @media (min-width: 600px) {
+        .toc ol {
+            grid-template-columns: 1fr 1fr;
+            gap: 0.4rem 1.5rem;
+        }
+    }
+
+    .toc a {
+        font-weight: 600;
+    }
+
+    .contact {
+        display: grid;
+        gap: 1rem;
+        margin: 1.25rem 0 0;
+        padding: 0;
+    }
+
+    @media (min-width: 720px) {
+        .contact {
+            grid-template-columns: repeat(3, minmax(0, 1fr));
+        }
+    }
+
+    .contact div {
+        padding: 1rem 1.25rem;
+        border-radius: 0.75rem;
+        border: 1px solid var(--rule);
+        background: var(--paper-deep);
+    }
+
+    .contact dt {
+        margin: 0 0 0.35rem;
+        color: var(--ink-soft);
+        font-size: 0.85rem;
+        font-weight: 700;
+        letter-spacing: 0.05em;
+        text-transform: uppercase;
+    }
+
+    .contact dd {
+        margin: 0;
+        color: var(--ink);
+        font-size: 1rem;
+    }
+
+    .table-wrap {
+        overflow-x: auto;
+        margin: 1rem 0 1.5rem;
+        border-radius: 0.75rem;
+        border: 1px solid var(--rule);
+    }
+
+    .data-table {
+        width: 100%;
+        margin: 0;
+        border-collapse: collapse;
+        font-size: 0.95rem;
+        line-height: 1.5;
+    }
+
+    .data-table thead th {
+        text-align: left;
+        padding: 0.85rem 1rem;
+        background: var(--paper-deep);
+        color: var(--ink);
+        font-family: var(--font-sans);
+        font-size: 0.85rem;
+        font-weight: 700;
+        letter-spacing: 0.04em;
+        text-transform: uppercase;
+        border-bottom: 1px solid var(--rule);
+    }
+
+    .data-table tbody th,
+    .data-table tbody td {
+        padding: 0.85rem 1rem;
+        vertical-align: top;
+        border-bottom: 1px solid var(--rule);
+        color: var(--ink);
+    }
+
+    .data-table tbody tr:last-child th,
+    .data-table tbody tr:last-child td {
+        border-bottom: 0;
+    }
+
+    .data-table tbody th {
+        width: 28%;
+        color: var(--ink);
+        font-weight: 700;
+        background: color-mix(in oklch, var(--paper-deep) 50%, var(--paper));
+    }
+
+    @media (min-width: 900px) {
+        .data-table tbody th {
+            width: 22%;
+        }
+    }
+
+    .data-table tbody td {
+        color: var(--ink-soft);
+    }
+
+    .footnote {
+        max-width: 60rem;
+        margin-top: -0.5rem;
+        color: var(--ink-soft);
+        font-size: 0.95rem;
+    }
+
+    .back-link {
+        margin-top: 3rem;
+        padding-top: 2rem;
+        border-top: 1px dashed var(--rule);
+    }
+</style>

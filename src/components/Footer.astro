@@ -1,0 +1,44 @@
+---
+import { siteConfig } from '@/config/site';
+
+const year = new Date().getFullYear();
+---
+
+<footer class="footer">
+    <div class="container footer-inner">
+        <p>© {year} Shoppingo. Open source under the AGPL-3.0 licence.</p>
+        <nav aria-label="Footer">
+            <a href={siteConfig.appUrl}>Open app</a>
+            <a href={siteConfig.repoUrl}>GitHub</a>
+            <a href={`${siteConfig.repoUrl}/issues`}>Issues</a>
+            <a href="/privacy">Privacy</a>
+        </nav>
+    </div>
+</footer>
+
+<style>
+    .footer {
+        border-top: 1px solid var(--rule);
+        background: var(--paper-deep);
+        font-size: 0.95rem;
+    }
+
+    .footer-inner {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        justify-content: space-between;
+        gap: 1rem;
+        padding-block: 2rem;
+    }
+
+    .footer p {
+        margin: 0;
+        color: var(--ink-soft);
+    }
+
+    .footer a {
+        color: var(--ink);
+        font-weight: 600;
+    }
+</style>

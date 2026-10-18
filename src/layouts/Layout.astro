@@ -2,6 +2,7 @@
 import '../styles.css';
 import Seo from '@/components/Seo.astro';
 import JsonLd from '@/components/JsonLd.astro';
+import Footer from '@/components/Footer.astro';
 import { siteConfig } from '@/config/site';
 
 export interface Props {
@@ -44,6 +45,7 @@ const orgSchema = siteConfig.business
 		<meta name="theme-color" content="#2e7d32" />
 		<Seo title={title} description={description} image={image} />
 		<JsonLd schema={orgSchema} />
+		<slot name="head" />
 	</head>
 	<body>
 		<a
@@ -55,5 +57,6 @@ const orgSchema = siteConfig.business
 		<main id="main-content">
 			<slot />
 		</main>
+		<Footer />
 	</body>
 </html>
