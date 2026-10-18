@@ -6,6 +6,15 @@ a shared shopping-list and recipe PWA. Static Astro output on S3 + CloudFront, l
 
 The app itself is a separate deployment; this repo only serves the marketing pages.
 
+## Architecture
+
+Diagram: [docs/diagrams/architecture.excalidraw](docs/diagrams/architecture.excalidraw)
+(open in excalidraw.com or the VS Code Excalidraw extension).
+
+Visitor → CloudFront (OAC) → private S3 bucket holding `dist/`. The page's CTAs link to the
+app at `https://app.shoppingo.imapps.uk`, which is deployed separately. Infra detail and
+bootstrap steps: [infra/README.md](infra/README.md).
+
 ## Stack
 
 | Concern | Choice |
@@ -30,6 +39,27 @@ bun run lint           # biome check
 bun run test           # vitest
 bun run test:e2e       # playwright
 ```
+
+Dev server needs no env. `bun run test:e2e` serves the existing `dist/` via `bun run preview`,
+so run `bun run build` first. CI also runs `bunx astro sync`, `tsc --noEmit` and
+`bun run typecheck` (`astro check`). There are currently no vitest test files under `src/`;
+Playwright covers `e2e/homepage.spec.ts`.
+
+## Environment
+
+| Name | Where | Purpose |
+|------|-------|---------|
+| `SITE_URL` | `.env` / GitHub repo variable | Astro `site` (canonical, OG, sitemap). Unset falls back to `http://localhost:4321`. |
+| `S3_BUCKET`, `CLOUDFRONT_DISTRIBUTION_ID`, `AWS_DEPLOY_ROLE_ARN`, `AWS_REGION` | GitHub repo variables | Deploy job in `ci-cd.yml` (from `terraform output`). |
+| `AWS_TERRAFORM_ROLE_ARN` | GitHub repo variable | `terraform.yml` plan/apply. |
+
+## CI / deploy
+
+- `pull-request.yml`: lint, test (+ typecheck), e2e (Chromium), Fallow audit.
+- `ci-cd.yml` (push to `main`): lint + test → build → semantic-release and deploy. Deploy assumes
+  `gha-deploy` via OIDC, `aws s3 sync`s `dist/` in three passes (`_astro/*` immutable, `images/*`
+  1h, everything else no-cache), then invalidates `/*`.
+- `terraform.yml`: `infra/**` PRs from this repo get a plan comment; pushes to `main` apply.
 
 ## Status
 
