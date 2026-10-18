@@ -71,7 +71,7 @@ resource "aws_iam_role_policy" "deploy" {
   policy = data.aws_iam_policy_document.deploy.json
 }
 
-# Terraform CI: broader permissions than gha-deploy (manages IAM/CloudFront/ACM/Route53,
+# Terraform CI: broader permissions than gha-deploy (manages IAM/CloudFront/ACM,
 # not just S3+CloudFront invalidation), so it's a separate role — gha-deploy stays
 # narrowly scoped to the app-deploy job only.
 #
@@ -133,8 +133,6 @@ data "aws_iam_policy_document" "terraform" {
       "iam:List*",
       "acm:Describe*",
       "acm:List*",
-      "route53:Get*",
-      "route53:List*",
     ]
     resources = ["*"]
   }
@@ -147,20 +145,6 @@ data "aws_iam_policy_document" "terraform" {
       "acm:RequestCertificate",
       "acm:DeleteCertificate",
       "acm:AddTagsToCertificate",
-    ]
-    resources = ["*"]
-  }
-
-  # Route53: hosted zone ID is unknown before creation (Resource "*"), but record changes
-  # and reads are scoped to hosted zones generally — AWS assigns zone IDs, so this can't be
-  # pinned to this project's zone specifically without a circular dependency.
-  statement {
-    sid = "Route53"
-    actions = [
-      "route53:CreateHostedZone",
-      "route53:DeleteHostedZone",
-      "route53:ChangeTagsForResource",
-      "route53:ChangeResourceRecordSets",
     ]
     resources = ["*"]
   }

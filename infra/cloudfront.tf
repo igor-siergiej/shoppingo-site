@@ -50,6 +50,12 @@ resource "aws_cloudfront_response_headers_policy" "security_headers" {
 # *.cloudfront.net URL keeps working, since disabling the whole distribution would take
 # both down. var.domain_hidden defaults to false — flip it to true only while
 # deliberately holding a domain back pre-launch (see infra/README.md).
+#
+# Also sends app traffic to var.app_url, keeping path and query: deep links into the app from
+# when it lived on this domain (APP_PREFIXES, the app's top-level routes plus /api), and
+# returning users, whom the app marks with the shoppingo_app cookie, landing on the home page.
+# `/?home` always shows the landing page. 302, not 301: browsers cache a 301 indefinitely,
+# which would pin a prefix to the app if this site ever serves its own page under it.
 resource "aws_cloudfront_function" "keystatic_index" {
   name    = "${var.project}-keystatic-index"
   runtime = "cloudfront-js-2.0"
@@ -57,11 +63,54 @@ resource "aws_cloudfront_function" "keystatic_index" {
   code    = <<-JS
     var DOMAIN_HIDDEN = ${var.domain_hidden};
     var HIDDEN_HOSTS = ['${var.domain_name}', 'www.${var.domain_name}'];
+    var APP_URL = '${var.app_url}';
+    var APP_PREFIXES = [
+        '/api', '/login', '/register', '/signup-cta', '/try', '/guest', '/list', '/recipes',
+        '/discover', '/share', '/calendar', '/meal-plan', '/friends', '/settings',
+    ];
+
+    function isAppPath(uri) {
+        for (var i = 0; i < APP_PREFIXES.length; i++) {
+            var prefix = APP_PREFIXES[i];
+            if (uri === prefix || uri.startsWith(prefix + '/')) return true;
+        }
+        return false;
+    }
+
+    function queryString(querystring) {
+        var parts = [];
+        for (var key in querystring) {
+            var entry = querystring[key];
+            var values = entry.multiValue || [entry];
+            for (var i = 0; i < values.length; i++) {
+                parts.push(values[i].value === '' ? key : key + '=' + values[i].value);
+            }
+        }
+        return parts.length ? '?' + parts.join('&') : '';
+    }
+
+    function redirect(location) {
+        return {
+            statusCode: 302,
+            statusDescription: 'Found',
+            headers: { location: { value: location }, 'cache-control': { value: 'no-store' } },
+        };
+    }
 
     function handler(event) {
         var request = event.request;
         if (DOMAIN_HIDDEN && HIDDEN_HOSTS.includes(request.headers.host.value)) {
             return { statusCode: 403, statusDescription: 'Forbidden' };
+        }
+        if (isAppPath(request.uri)) {
+            return redirect(APP_URL + request.uri + queryString(request.querystring));
+        }
+        if (
+            (request.uri === '/' || request.uri === '/index.html') &&
+            request.cookies.shoppingo_app &&
+            !request.querystring.home
+        ) {
+            return redirect(APP_URL + '/');
         }
         if (
             request.uri === '/keystatic' ||

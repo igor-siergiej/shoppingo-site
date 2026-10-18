@@ -108,6 +108,18 @@ const faqSchema = {
 ---
 
 <Layout title={siteConfig.title} description={siteConfig.description}>
+    <script is:inline slot="head" define:vars={{ appUrl: siteConfig.appUrl }}>
+        // Returning users skip the landing page; `/?home` always shows it. The edge function
+        // redirects on the `shoppingo_app` cookie the app sets. This covers people who used the
+        // app when it lived on this origin: their browser still holds its localStorage here.
+        try {
+            if (!new URLSearchParams(location.search).has('home') && localStorage.getItem('shoppingo:config')) {
+                location.replace(`${appUrl}/`);
+            }
+        } catch {
+            // Storage blocked: show the landing page.
+        }
+    </script>
     <JsonLd schema={appSchema} />
     <JsonLd schema={faqSchema} />
 

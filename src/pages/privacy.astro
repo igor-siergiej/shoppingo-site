@@ -191,6 +191,13 @@ const storage = [
         lifetime: 'Rolling; expires when the session ends or is revoked.',
     },
     {
+        name: 'shoppingo_app',
+        kind: 'Functional cookie',
+        purpose:
+            'Set by the app after you sign in, on shoppingo.imapps.uk and its subdomains, so visiting shoppingo.imapps.uk takes you straight to the app instead of this landing page. Holds no identifier, only the value 1.',
+        lifetime: '1 year.',
+    },
+    {
         name: 'shoppingo:config',
         kind: 'localStorage',
         purpose: 'Persisted UI preferences (e.g. tutorial completion flags).',
@@ -289,8 +296,8 @@ const rights = [
         <section aria-labelledby="who">
             <h2 id="who">Who runs Shoppingo</h2>
             <p>
-                Shoppingo is an open-source project. The hosted version at <code>shoppingo.imapps.uk</code> is operated
-                by the project maintainer as a small personal service. It is not a commercial product.
+                Shoppingo is an open-source project. The hosted version at <code>app.shoppingo.imapps.uk</code> is
+                operated by the project maintainer as a small personal service. It is not a commercial product.
             </p>
             <dl class="contact">
                 <div>
@@ -475,9 +482,9 @@ const rights = [
         <section aria-labelledby="storage">
             <h2 id="storage">Cookies and local storage</h2>
             <p>
-                Cookies are kept to the minimum. The single cookie set by the service is strictly necessary for
-                authentication; everything else is local storage on the user’s device, which the user can clear at any
-                time.
+                Cookies are kept to the minimum: one strictly necessary for authentication, and one that sends
+                returning users from this landing page straight to the app. Everything else is local storage on the
+                user’s device, which the user can clear at any time.
             </p>
             <div class="table-wrap">
                 <table class="data-table">

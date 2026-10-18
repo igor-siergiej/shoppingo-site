@@ -117,6 +117,14 @@ that path gets a `terraform plan` posted as a PR comment; a merge to `main` runs
 keys). The `gha-terraform` role itself has to exist before CI can assume it — bootstrap
 it with one local `terraform apply` first, same as `gha-deploy`.
 
+The Cloudflare records (`dns.tf`, `acm.tf`) need a **`CLOUDFLARE_API_TOKEN`** repository
+secret, scoped to Zone:Read + DNS:Edit on the `imapps.uk` zone only; export the same
+variable for a local `terraform plan`/`apply`:
+
+```bash
+gh secret set CLOUDFLARE_API_TOKEN
+```
+
 There's no branch-protection gate on the `plan` check (GitHub Pro is required for
 required-status-checks on a private repo) — treat a red `plan` job as "don't merge yet",
 not as something that physically blocks the merge button.
@@ -129,5 +137,7 @@ not as something that physically blocks the merge button.
 - Routing: a missing/mistyped path is a real 404 — CloudFront maps 403/404 → `/404.html` (response code 404), not to the homepage.
 - Caching: content-hashed `_astro/*` uploaded `immutable`; `images/*` (Keystatic overwrites these in place) uploaded with a 1-hour cache; every page, `sitemap*.xml`, `rss.xml` and `robots.txt` uploaded `no-cache` — set by the deploy job in `.github/workflows/ci-cd.yml`.
 - `var.domain_hidden` (default `false`) 403s the real domain while `true`, leaving only the `*.cloudfront.net` URL reachable — use it to stage a domain pre-launch, then flip to `false` (or unset) to go live.
+- Domain: `shoppingo.imapps.uk` + `www.` (`var.domain_name`, in the Cloudflare zone `var.cloudflare_zone`). The ACM validation CNAMEs and the CloudFront CNAMEs are DNS-only, since CloudFront terminates TLS. The apex took over a proxied tunnel CNAME that served the app before it moved to `app.shoppingo.imapps.uk`; that record was imported into `cloudflare_dns_record.site` (see the `import` block in `dns.tf`).
+- App redirects: the viewer-request function sends the app's old top-level routes (and `/api`) to `var.app_url` with path and query kept, and sends `/` there when the `shoppingo_app` cookie is set (the app sets it after sign-in). `/?home` always serves the landing page.
 - If the account already has a GitHub OIDC provider, `terraform import` it into
   `aws_iam_openid_connect_provider.github` before applying (AWS allows only one per URL).
