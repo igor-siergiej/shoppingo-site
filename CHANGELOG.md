@@ -1,3 +1,10 @@
+# [1.3.0](https://github.com/igor-siergiej/shoppingo-site/compare/v1.2.0...v1.3.0) (2026-10-19)
+
+
+### Features
+
+* serve shoppingo.imapps.uk from CloudFront, send app traffic to app.shoppingo.imapps.uk ([#5](https://github.com/igor-siergiej/shoppingo-site/issues/5)) ([1fac986](https://github.com/igor-siergiej/shoppingo-site/commit/1fac986ad66bd8c211584e9225cd68a1feac4f7d)), closes [#82](https://github.com/igor-siergiej/shoppingo-site/issues/82)
+
 # [1.2.0](https://github.com/igor-siergiej/shoppingo-site/compare/v1.1.0...v1.2.0) (2026-10-18)
 
 
