@@ -14,21 +14,23 @@ resource "aws_acm_certificate" "site" {
   }
 }
 
-resource "aws_route53_record" "cert_validation" {
+# DNS-only, and kept after validation so ACM can renew the cert automatically.
+resource "cloudflare_dns_record" "cert_validation" {
   for_each = local.has_domain ? {
     for dvo in aws_acm_certificate.site[0].domain_validation_options : dvo.domain_name => {
-      name   = dvo.resource_record_name
-      record = dvo.resource_record_value
+      name   = trimsuffix(dvo.resource_record_name, ".")
+      record = trimsuffix(dvo.resource_record_value, ".")
       type   = dvo.resource_record_type
     }
   } : {}
 
-  zone_id         = aws_route53_zone.site[0].zone_id
-  name            = each.value.name
-  type            = each.value.type
-  records         = [each.value.record]
-  ttl             = 60
-  allow_overwrite = true
+  zone_id = data.cloudflare_zone.site[0].zone_id
+  name    = each.value.name
+  type    = each.value.type
+  content = each.value.record
+  proxied = false
+  ttl     = 60
+  comment = "shoppingo-site ACM validation (Terraform)"
 }
 
 resource "aws_acm_certificate_validation" "site" {
@@ -36,5 +38,5 @@ resource "aws_acm_certificate_validation" "site" {
 
   provider                = aws.us_east_1
   certificate_arn         = aws_acm_certificate.site[0].arn
-  validation_record_fqdns = [for r in aws_route53_record.cert_validation : r.fqdn]
+  validation_record_fqdns = [for r in cloudflare_dns_record.cert_validation : r.name]
 }

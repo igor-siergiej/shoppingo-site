@@ -12,7 +12,7 @@ Diagram: [docs/diagrams/architecture.excalidraw](docs/diagrams/architecture.exca
 (open in excalidraw.com or the VS Code Excalidraw extension).
 
 Visitor → CloudFront (OAC) → private S3 bucket holding `dist/`. The page's CTAs link to the
-app at `https://app.shoppingo.imapps.uk`, which is deployed separately. Infra detail and
+app at `https://shoppingo-app.imapps.uk`, which is deployed separately. Infra detail and
 bootstrap steps: [infra/README.md](infra/README.md).
 
 ## Stack
@@ -52,6 +52,7 @@ Playwright covers `e2e/homepage.spec.ts`.
 | `SITE_URL` | `.env` / GitHub repo variable | Astro `site` (canonical, OG, sitemap). Unset falls back to `http://localhost:4321`. |
 | `S3_BUCKET`, `CLOUDFRONT_DISTRIBUTION_ID`, `AWS_DEPLOY_ROLE_ARN`, `AWS_REGION` | GitHub repo variables | Deploy job in `ci-cd.yml` (from `terraform output`). |
 | `AWS_TERRAFORM_ROLE_ARN` | GitHub repo variable | `terraform.yml` plan/apply. |
+| `CLOUDFLARE_API_TOKEN` | GitHub repo secret | `terraform.yml` plan/apply: the `imapps.uk` records in `infra/dns.tf` and `infra/acm.tf`. Scope: Zone:Read + DNS:Edit on `imapps.uk` only. |
 
 ## CI / deploy
 
@@ -65,10 +66,12 @@ Playwright covers `e2e/homepage.spec.ts`.
 
 - Infra follows the same split as `portfolio` in the shared AWS account: own state bucket
   `shoppingo-site-tfstate-777799876926`, own site bucket, own `shoppingo-site-gha-*` OIDC roles,
-  and it reuses the account's existing GitHub OIDC provider. Not applied yet.
-- `domain_name` is blank, so the first apply serves the site only on its `*.cloudfront.net`
-  URL. `imapps.uk` DNS lives in Cloudflare, not Route 53, so wiring `shoppingo.imapps.uk`
-  needs the Cloudflare provider in place of `route53.tf` before the domain is set.
+  and it reuses the account's existing GitHub OIDC provider.
+- The site serves `shoppingo.imapps.uk` and `www.`: ACM cert in us-east-1, validated and pointed
+  at CloudFront by DNS-only (grey cloud) CNAMEs in the Cloudflare `imapps.uk` zone. The app lives
+  at `shoppingo-app.imapps.uk` (foundry Dokploy). The CloudFront function sends old app deep links
+  and returning users (the app's `shoppingo_app` cookie) there; `/?home` always shows this page.
+  `public/sw.js` replaces the service worker the app registered on this origin before it moved.
 - Keystatic and the blog scaffolding were removed: the page is a single hand-written landing page.
 - App screenshots in `src/assets/screens` are captured from the live app on a phone-sized viewport (390x844 @3x).
 

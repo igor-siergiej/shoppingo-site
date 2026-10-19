@@ -10,6 +10,10 @@ terraform {
       source  = "hashicorp/tls"
       version = "~> 4.0"
     }
+    cloudflare = {
+      source  = "cloudflare/cloudflare"
+      version = "~> 5.0"
+    }
   }
 }
 
@@ -22,3 +26,7 @@ provider "aws" {
   alias  = "us_east_1"
   region = "us-east-1"
 }
+
+# imapps.uk DNS lives on Cloudflare. Reads CLOUDFLARE_API_TOKEN from the environment (a token
+# scoped to Zone:Read + DNS:Edit on imapps.uk; a GitHub Actions secret in CI).
+provider "cloudflare" {}

@@ -27,8 +27,3 @@ output "cloudfront_url" {
   description = "Live site URL."
   value       = "https://${aws_cloudfront_distribution.site.domain_name}"
 }
-
-output "route53_name_servers" {
-  description = "Set these as the NS records at your domain registrar to delegate the domain. Null until var.domain_name is set."
-  value       = local.has_domain ? aws_route53_zone.site[0].name_servers : null
-}

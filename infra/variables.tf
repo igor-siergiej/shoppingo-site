@@ -45,9 +45,21 @@ variable "price_class" {
 }
 
 variable "domain_name" {
-  description = "Domain to host in Route 53 (delegate NS records here from the registrar). Empty (the default) skips ACM and Route 53 entirely and serves the site off its *.cloudfront.net URL with CloudFront's default certificate."
+  description = "Domain the site serves on, inside cloudflare_zone (records in dns.tf). Empty skips ACM and DNS entirely and serves the site off its *.cloudfront.net URL with CloudFront's default certificate."
   type        = string
-  default     = ""
+  default     = "shoppingo.imapps.uk"
+}
+
+variable "cloudflare_zone" {
+  description = "Cloudflare zone that holds domain_name and www.domain_name."
+  type        = string
+  default     = "imapps.uk"
+}
+
+variable "app_url" {
+  description = "Origin of the Shoppingo app. The edge function sends old app deep links and returning users (shoppingo_app cookie) there."
+  type        = string
+  default     = "https://shoppingo-app.imapps.uk"
 }
 
 variable "tfstate_bucket" {

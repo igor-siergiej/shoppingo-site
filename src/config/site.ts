@@ -42,8 +42,7 @@ export const siteConfig = {
      * for a non-local-business content site.
      */
     business: undefined as LocalBusinessConfig | undefined,
-    // Moves to https://app.shoppingo.imapps.uk when the landing site takes over the root domain.
-    appUrl: 'https://shoppingo.imapps.uk',
+    appUrl: 'https://shoppingo-app.imapps.uk',
     repoUrl: 'https://github.com/igor-siergiej/shoppingo',
     faqs: [
         {

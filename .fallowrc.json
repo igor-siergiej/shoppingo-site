@@ -9,7 +9,8 @@
     "**/build/**",
     "**/coverage/**",
     ".fallow/**",
-    ".fallowrc.json"
+    ".fallowrc.json",
+    "public/sw.js"
   ],
   "ignoreUnresolvedImports": ["bun:test"],
   "ignoreDependencies": ["@astrojs/sitemap", "@tailwindcss/vite"]
