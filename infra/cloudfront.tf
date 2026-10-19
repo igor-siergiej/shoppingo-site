@@ -54,7 +54,9 @@ resource "aws_cloudfront_response_headers_policy" "security_headers" {
 # Also sends app traffic to var.app_url, keeping path and query: deep links into the app from
 # when it lived on this domain (APP_PREFIXES, the app's top-level routes plus /api), and
 # returning users, whom the app marks with the shoppingo_app cookie, landing on the home page.
-# `/?home` always shows the landing page. 302, not 301: browsers cache a 301 indefinitely,
+# That redirect carries `?moved=1` so the app can tell the user to reinstall it from its new
+# address (installed copies of the old PWA still open this domain). `/?home` always shows the
+# landing page. 302, not 301: browsers cache a 301 indefinitely,
 # which would pin a prefix to the app if this site ever serves its own page under it.
 resource "aws_cloudfront_function" "keystatic_index" {
   name    = "${var.project}-keystatic-index"
@@ -110,7 +112,7 @@ resource "aws_cloudfront_function" "keystatic_index" {
             request.cookies.shoppingo_app &&
             !request.querystring.home
         ) {
-            return redirect(APP_URL + '/');
+            return redirect(APP_URL + '/?moved=1');
         }
         if (
             request.uri === '/keystatic' ||

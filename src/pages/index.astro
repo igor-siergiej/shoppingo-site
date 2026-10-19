@@ -112,9 +112,10 @@ const faqSchema = {
         // Returning users skip the landing page; `/?home` always shows it. The edge function
         // redirects on the `shoppingo_app` cookie the app sets. This covers people who used the
         // app when it lived on this origin: their browser still holds its localStorage here.
+        // `?moved=1` tells the app to show its "reinstall from the new address" banner.
         try {
             if (!new URLSearchParams(location.search).has('home') && localStorage.getItem('shoppingo:config')) {
-                location.replace(`${appUrl}/`);
+                location.replace(`${appUrl}/?moved=1`);
             }
         } catch {
             // Storage blocked: show the landing page.
