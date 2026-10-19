@@ -12,7 +12,7 @@ Diagram: [docs/diagrams/architecture.excalidraw](docs/diagrams/architecture.exca
 (open in excalidraw.com or the VS Code Excalidraw extension).
 
 Visitor → CloudFront (OAC) → private S3 bucket holding `dist/`. The page's CTAs link to the
-app at `https://app.shoppingo.imapps.uk`, which is deployed separately. Infra detail and
+app at `https://shoppingo-app.imapps.uk`, which is deployed separately. Infra detail and
 bootstrap steps: [infra/README.md](infra/README.md).
 
 ## Stack
@@ -69,7 +69,7 @@ Playwright covers `e2e/homepage.spec.ts`.
   and it reuses the account's existing GitHub OIDC provider.
 - The site serves `shoppingo.imapps.uk` and `www.`: ACM cert in us-east-1, validated and pointed
   at CloudFront by DNS-only (grey cloud) CNAMEs in the Cloudflare `imapps.uk` zone. The app lives
-  at `app.shoppingo.imapps.uk` (foundry Dokploy). The CloudFront function sends old app deep links
+  at `shoppingo-app.imapps.uk` (foundry Dokploy). The CloudFront function sends old app deep links
   and returning users (the app's `shoppingo_app` cookie) there; `/?home` always shows this page.
   `public/sw.js` replaces the service worker the app registered on this origin before it moved.
 - Keystatic and the blog scaffolding were removed: the page is a single hand-written landing page.

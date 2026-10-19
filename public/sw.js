@@ -1,4 +1,4 @@
-// The Shoppingo app lived on this origin until it moved to app.shoppingo.imapps.uk, and its
+// The Shoppingo app lived on this origin until it moved to shoppingo-app.imapps.uk, and its
 // service worker (/sw.js) still runs in browsers that used or installed it here, serving the
 // cached app. Browsers fetch /sw.js to check for updates, so this replacement installs over
 // it, drops its caches, unregisters itself and reloads open tabs. The reload reaches the

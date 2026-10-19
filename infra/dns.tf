@@ -9,10 +9,11 @@ data "cloudflare_zone" "site" {
 }
 
 # DNS-only (grey cloud): CloudFront terminates TLS with the ACM cert, so Cloudflare must not
-# proxy. The apex record replaces the proxied tunnel CNAME that served the app here before it
-# moved to app.shoppingo.imapps.uk. The record waits for the cert validation and the
-# distribution (which carries the aliases), so the hostname never points at CloudFront before
-# CloudFront can answer for it.
+# proxy. The apex record took over the proxied tunnel CNAME that served the app here before it
+# moved to shoppingo-app.imapps.uk (import block below), so it changes in place instead of
+# being deleted and recreated. The record waits for the cert validation and the distribution
+# (which carries the aliases), so the hostname never points at CloudFront before CloudFront
+# can answer for it.
 resource "cloudflare_dns_record" "site" {
   for_each = local.has_domain ? toset([var.domain_name, "www.${var.domain_name}"]) : toset([])
 
@@ -25,4 +26,10 @@ resource "cloudflare_dns_record" "site" {
   comment = "shoppingo-site CloudFront (Terraform)"
 
   depends_on = [aws_acm_certificate_validation.site]
+}
+
+# The app's old tunnel CNAME at the apex (zone_id/record_id).
+import {
+  to = cloudflare_dns_record.site["shoppingo.imapps.uk"]
+  id = "e8069a9a6e586db3add05a408bd1e2d0/fec0de34ff16727c526e701e71b314a8"
 }

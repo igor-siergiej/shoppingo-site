@@ -42,7 +42,7 @@ export const siteConfig = {
      * for a non-local-business content site.
      */
     business: undefined as LocalBusinessConfig | undefined,
-    appUrl: 'https://app.shoppingo.imapps.uk',
+    appUrl: 'https://shoppingo-app.imapps.uk',
     repoUrl: 'https://github.com/igor-siergiej/shoppingo',
     faqs: [
         {
