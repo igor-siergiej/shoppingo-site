@@ -3,7 +3,7 @@ import Layout from '@/layouts/Layout.astro';
 
 export const prerender = true;
 
-const lastUpdated = '2026-10-18';
+const lastUpdated = '2026-10-20';
 
 const inventory = [
     {
@@ -194,7 +194,7 @@ const storage = [
         name: 'shoppingo_app',
         kind: 'Functional cookie',
         purpose:
-            'Set by the app after you sign in, on imapps.uk (the parent domain of the app and this site), so visiting shoppingo.imapps.uk takes you straight to the app instead of this landing page. Holds no identifier, only the value 1.',
+            'Set on imapps.uk by the app after you signed in, while the app lived on that domain, so visiting shoppingo.imapps.uk takes you straight to the app instead of this landing page. The app no longer sets it since moving to tandra.uk; existing copies expire on their own. Holds no identifier, only the value 1.',
         lifetime: '1 year.',
     },
     {
@@ -274,7 +274,7 @@ const rights = [
             <h1 id="privacy-title">Privacy notice</h1>
             <p class="lede">
                 This notice explains what Shoppingo collects, why, where it is stored and what you can do with it. It
-                applies to shoppingo.imapps.uk (the landing site) and the hosted app that lives under the same domain.
+                applies to shoppingo.imapps.uk (the landing site) and the hosted app at tandra.uk.
             </p>
             <p class="updated">Last updated: {lastUpdated}.</p>
         </header>
@@ -296,7 +296,7 @@ const rights = [
         <section aria-labelledby="who">
             <h2 id="who">Who runs Shoppingo</h2>
             <p>
-                Shoppingo is an open-source project. The hosted version at <code>shoppingo-app.imapps.uk</code> is
+                Shoppingo is an open-source project. The hosted version at <code>tandra.uk</code> is
                 operated by the project maintainer as a small personal service. It is not a commercial product.
             </p>
             <dl class="contact">

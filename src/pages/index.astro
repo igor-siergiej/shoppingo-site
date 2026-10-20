@@ -110,7 +110,7 @@ const faqSchema = {
 <Layout title={siteConfig.title} description={siteConfig.description}>
     <script is:inline slot="head" define:vars={{ appUrl: siteConfig.appUrl }}>
         // Returning users skip the landing page; `/?home` always shows it. The edge function
-        // redirects on the `shoppingo_app` cookie the app sets. This covers people who used the
+        // redirects on the `shoppingo_app` cookie the app set while it lived on imapps.uk. This covers people who used the
         // app when it lived on this origin: their browser still holds its localStorage here.
         // `?moved=1` tells the app to show its "reinstall from the new address" banner.
         try {
