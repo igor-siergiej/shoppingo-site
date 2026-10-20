@@ -57,9 +57,9 @@ variable "cloudflare_zone" {
 }
 
 variable "app_url" {
-  description = "Origin of the Shoppingo app. The edge function sends old app deep links and returning users (shoppingo_app cookie) there."
+  description = "Origin of the Shoppingo app. The edge function sends old app deep links and returning users (shoppingo_app cookie, set by the app while it lived on imapps.uk) there."
   type        = string
-  default     = "https://shoppingo-app.imapps.uk"
+  default     = "https://tandra.uk"
 }
 
 variable "tfstate_bucket" {
