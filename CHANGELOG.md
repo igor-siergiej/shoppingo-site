@@ -1,3 +1,10 @@
+# [1.5.0](https://github.com/igor-siergiej/shoppingo-site/compare/v1.4.0...v1.5.0) (2026-10-20)
+
+
+### Features
+
+* send app traffic to tandra.uk ([#7](https://github.com/igor-siergiej/shoppingo-site/issues/7)) ([2240f7a](https://github.com/igor-siergiej/shoppingo-site/commit/2240f7af0d3f410aff80535bd4718e48e4a84986))
+
 # [1.4.0](https://github.com/igor-siergiej/shoppingo-site/compare/v1.3.0...v1.4.0) (2026-10-20)
 
 
