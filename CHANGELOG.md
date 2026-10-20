@@ -1,3 +1,10 @@
+# [1.4.0](https://github.com/igor-siergiej/shoppingo-site/compare/v1.3.0...v1.4.0) (2026-10-20)
+
+
+### Features
+
+* tag returning-user redirects with ?moved=1 ([#6](https://github.com/igor-siergiej/shoppingo-site/issues/6)) ([2cab849](https://github.com/igor-siergiej/shoppingo-site/commit/2cab8495cbdc8435895c63368bdde90500b95e69))
+
 # [1.3.0](https://github.com/igor-siergiej/shoppingo-site/compare/v1.2.0...v1.3.0) (2026-10-19)
 
 
