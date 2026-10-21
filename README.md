@@ -1,7 +1,7 @@
-# Shoppingo Site
+# Tandra Site
 
-Landing site and public recipe pages for [Shoppingo](https://github.com/igor-siergiej/shoppingo),
-a shared shopping-list and recipe PWA. Static Astro output on S3 + CloudFront, live at https://d3o01nt4oiwfr9.cloudfront.net until `shoppingo.imapps.uk` is pointed at it, scaffolded from
+Landing site for [Tandra](https://github.com/igor-siergiej/shoppingo) (formerly Shoppingo),
+a shared shopping-list and recipe PWA. Static Astro output on S3 + CloudFront, live at https://tandra.uk, scaffolded from
 [content-website-template](https://github.com/igor-siergiej/content-website-template).
 
 The app itself is a separate deployment; this repo only serves the marketing pages.
@@ -67,12 +67,13 @@ Playwright covers `e2e/homepage.spec.ts`.
 - Infra follows the same split as `portfolio` in the shared AWS account: own state bucket
   `shoppingo-site-tfstate-777799876926`, own site bucket, own `shoppingo-site-gha-*` OIDC roles,
   and it reuses the account's existing GitHub OIDC provider.
-- The site serves `shoppingo.imapps.uk` and `www.`: ACM cert in us-east-1, validated and pointed
-  at CloudFront by DNS-only (grey cloud) CNAMEs in the Cloudflare `imapps.uk` zone. The app lives
-  at `tandra.uk` (foundry Dokploy). The CloudFront function sends old app deep links
-  and returning users (the `shoppingo_app` cookie the app set on `imapps.uk` before it moved to
-  `tandra.uk`) there; `/?home` always shows this page.
+- The site serves `tandra.uk` and `www.`: ACM cert in us-east-1, validated and pointed
+  at CloudFront by DNS-only (grey cloud) CNAMEs in the Cloudflare `tandra.uk` zone. The app lives
+  at `app.tandra.uk` (foundry Dokploy). The CloudFront function sends old app deep links (the app
+  lived on `tandra.uk` before it moved) and returning users (the `tandra_app` cookie the app sets
+  on `tandra.uk`) there; `/?home` always shows this page.
   `public/sw.js` replaces the service worker the app registered on this origin before it moved.
+  AWS resource names (`shoppingo-site-*` buckets and roles) keep the old name until the repo rename.
 - Keystatic and the blog scaffolding were removed: the page is a single hand-written landing page.
 - App screenshots in `src/assets/screens` are captured from the live app on a phone-sized viewport (390x844 @3x).
 

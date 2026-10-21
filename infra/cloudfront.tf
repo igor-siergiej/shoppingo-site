@@ -53,12 +53,10 @@ resource "aws_cloudfront_response_headers_policy" "security_headers" {
 #
 # Also sends app traffic to var.app_url, keeping path and query: deep links into the app from
 # when it lived on this domain (APP_PREFIXES, the app's top-level routes plus /api), and
-# returning users, whom the app marked with the shoppingo_app cookie while it lived on imapps.uk,
-# landing on the home page.
-# That redirect carries `?moved=1` so the app can tell the user to reinstall it from its new
-# address (installed copies of the old PWA still open this domain). `/?home` always shows the
-# landing page. 302, not 301: browsers cache a 301 indefinitely,
-# which would pin a prefix to the app if this site ever serves its own page under it.
+# returning users, whom the app marks with the tandra_app cookie (set on this domain from
+# app.tandra.uk), landing on the home page. `/?home` always shows the landing page. 302, not
+# 301: browsers cache a 301 indefinitely, which would pin a prefix to the app if this site ever
+# serves its own page under it.
 resource "aws_cloudfront_function" "keystatic_index" {
   name    = "${var.project}-keystatic-index"
   runtime = "cloudfront-js-2.0"
@@ -110,10 +108,10 @@ resource "aws_cloudfront_function" "keystatic_index" {
         }
         if (
             (request.uri === '/' || request.uri === '/index.html') &&
-            request.cookies.shoppingo_app &&
+            request.cookies.tandra_app &&
             !request.querystring.home
         ) {
-            return redirect(APP_URL + '/?moved=1');
+            return redirect(APP_URL + '/');
         }
         if (
             request.uri === '/keystatic' ||

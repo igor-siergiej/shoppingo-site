@@ -9,9 +9,9 @@ test('homepage renders the pitch, links to the app and has no console errors @sm
 
     await page.goto('/');
 
-    await expect(page).toHaveTitle(/Shoppingo/);
+    await expect(page).toHaveTitle(/Tandra/);
     await expect(page.getByRole('heading', { level: 1 })).toHaveText(/shared shopping list/i);
-    await expect(page.getByRole('link', { name: 'Open Shoppingo' })).toHaveAttribute('href', /^https:\/\//);
+    await expect(page.getByRole('link', { name: 'Open Tandra' })).toHaveAttribute('href', /^https:\/\//);
     await expect(page.getByRole('link', { name: 'Try it without an account' })).toHaveAttribute(
         'href',
         /^https:\/\/.+\/try$/
