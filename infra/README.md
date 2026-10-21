@@ -118,7 +118,7 @@ keys). The `gha-terraform` role itself has to exist before CI can assume it — 
 it with one local `terraform apply` first, same as `gha-deploy`.
 
 The Cloudflare records (`dns.tf`, `acm.tf`) need a **`CLOUDFLARE_API_TOKEN`** repository
-secret, scoped to Zone:Read + DNS:Edit on the `imapps.uk` zone only; export the same
+secret, scoped to Zone:Read + DNS:Edit on the `tandra.uk` zone only; export the same
 variable for a local `terraform plan`/`apply`:
 
 ```bash

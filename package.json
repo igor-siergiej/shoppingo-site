@@ -1,10 +1,10 @@
 {
-  "name": "shoppingo-site",
+  "name": "tandra-site",
   "version": "1.6.0",
   "license": "AGPL-3.0-or-later",
   "repository": {
     "type": "git",
-    "url": "https://github.com/igor-siergiej/shoppingo-site"
+    "url": "https://github.com/igor-siergiej/tandra-site"
   },
   "dependencies": {
     "@astrojs/sitemap": "^3.7.4",

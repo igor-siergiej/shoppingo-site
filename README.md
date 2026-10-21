@@ -1,6 +1,6 @@
 # Tandra Site
 
-Landing site for [Tandra](https://github.com/igor-siergiej/shoppingo) (formerly Shoppingo),
+Landing site for [Tandra](https://github.com/igor-siergiej/tandra),
 a shared shopping-list and recipe PWA. Static Astro output on S3 + CloudFront, live at https://tandra.uk, scaffolded from
 [content-website-template](https://github.com/igor-siergiej/content-website-template).
 
@@ -52,7 +52,7 @@ Playwright covers `e2e/homepage.spec.ts`.
 | `SITE_URL` | `.env` / GitHub repo variable | Astro `site` (canonical, OG, sitemap). Unset falls back to `http://localhost:4321`. |
 | `S3_BUCKET`, `CLOUDFRONT_DISTRIBUTION_ID`, `AWS_DEPLOY_ROLE_ARN`, `AWS_REGION` | GitHub repo variables | Deploy job in `ci-cd.yml` (from `terraform output`). |
 | `AWS_TERRAFORM_ROLE_ARN` | GitHub repo variable | `terraform.yml` plan/apply. |
-| `CLOUDFLARE_API_TOKEN` | GitHub repo secret | `terraform.yml` plan/apply: the `imapps.uk` records in `infra/dns.tf` and `infra/acm.tf`. Scope: Zone:Read + DNS:Edit on `imapps.uk` only. |
+| `CLOUDFLARE_API_TOKEN` | GitHub repo secret | `terraform.yml` plan/apply: the `tandra.uk` records in `infra/dns.tf` and `infra/acm.tf`. Scope: Zone:Read + DNS:Edit on `tandra.uk` only. |
 
 ## CI / deploy
 
@@ -65,7 +65,7 @@ Playwright covers `e2e/homepage.spec.ts`.
 ## Status
 
 - Infra follows the same split as `portfolio` in the shared AWS account: own state bucket
-  `shoppingo-site-tfstate-777799876926`, own site bucket, own `shoppingo-site-gha-*` OIDC roles,
+  `tandra-site-tfstate-777799876926`, own site bucket, own `tandra-site-gha-*` OIDC roles,
   and it reuses the account's existing GitHub OIDC provider.
 - The site serves `tandra.uk` and `www.`: ACM cert in us-east-1, validated and pointed
   at CloudFront by DNS-only (grey cloud) CNAMEs in the Cloudflare `tandra.uk` zone. The app lives
@@ -73,7 +73,6 @@ Playwright covers `e2e/homepage.spec.ts`.
   lived on `tandra.uk` before it moved) and returning users (the `tandra_app` cookie the app sets
   on `tandra.uk`) there; `/?home` always shows this page.
   `public/sw.js` replaces the service worker the app registered on this origin before it moved.
-  AWS resource names (`shoppingo-site-*` buckets and roles) keep the old name until the repo rename.
 - Keystatic and the blog scaffolding were removed: the page is a single hand-written landing page.
 - App screenshots in `src/assets/screens` are captured from the live app on a phone-sized viewport (390x844 @3x).
 

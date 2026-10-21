@@ -127,6 +127,13 @@ resource "aws_cloudfront_function" "keystatic_index" {
         return request;
     }
   JS
+
+  # The name is fixed at creation, so renaming var.project replaces the function. AWS refuses to
+  # delete a function still associated with the distribution, so create the new one and repoint
+  # the distribution before the old one is destroyed.
+  lifecycle {
+    create_before_destroy = true
+  }
 }
 
 resource "aws_cloudfront_distribution" "site" {

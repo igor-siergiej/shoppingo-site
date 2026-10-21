@@ -110,9 +110,10 @@ const faqSchema = {
     <script is:inline slot="head" define:vars={{ appUrl: siteConfig.appUrl }}>
         // Returning users skip the landing page; `/?home` always shows it. The edge function
         // redirects on the `tandra_app` cookie the app sets from app.tandra.uk. This covers people who
-        // used the app when it lived on this origin (tandra.uk, and shoppingo.imapps.uk before it): their
-        // browser still holds its localStorage here. `?moved=1` tells the app to show its "reinstall
-        // from the new address" banner.
+        // used the app when it lived on this origin (tandra.uk): their browser still holds the localStorage
+        // that app wrote here, under its pre-rename key. The current app never writes to this origin, so the
+        // old key is the only one worth checking. `?moved=1` tells the app to show its "reinstall from the
+        // new address" banner.
         try {
             if (!new URLSearchParams(location.search).has('home') && localStorage.getItem('shoppingo:config')) {
                 location.replace(`${appUrl}/?moved=1`);
@@ -194,8 +195,8 @@ const faqSchema = {
                 <a href={`${siteConfig.repoUrl}/issues`} class="button button-quiet">Report a bug or suggest an idea</a>
             </div>
         </div>
-        <pre class="terminal" aria-label="Commands to self-host Tandra"><code><span class="prompt">$</span> git clone https://github.com/igor-siergiej/shoppingo
-<span class="prompt">$</span> cd shoppingo/selfhost
+        <pre class="terminal" aria-label="Commands to self-host Tandra"><code><span class="prompt">$</span> git clone https://github.com/igor-siergiej/tandra
+<span class="prompt">$</span> cd tandra/selfhost
 <span class="prompt">$</span> cp .env.example .env
 <span class="prompt">$</span> docker compose up -d</code></pre>
     </section>
