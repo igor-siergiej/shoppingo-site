@@ -1,3 +1,10 @@
+# [1.6.0](https://github.com/igor-siergiej/shoppingo-site/compare/v1.5.0...v1.6.0) (2026-10-21)
+
+
+### Features
+
+* serve the Tandra landing site on tandra.uk ([#8](https://github.com/igor-siergiej/shoppingo-site/issues/8)) ([b0bbccc](https://github.com/igor-siergiej/shoppingo-site/commit/b0bbccc5aeedbafd58fe881b618fa6c426bbc56d))
+
 # [1.5.0](https://github.com/igor-siergiej/shoppingo-site/compare/v1.4.0...v1.5.0) (2026-10-20)
 
 
