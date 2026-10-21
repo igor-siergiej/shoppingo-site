@@ -20,7 +20,7 @@ const inventory = [
     },
     {
         category: 'User data in MongoDB',
-        source: 'shoppingo-api',
+        source: 'Tandra API',
         what: 'Lists, recipes, todos, labels, meal plans, push subscriptions, friendships, pairing codes, Discover publications and reports, item categories.',
         why: 'To provide the app’s features to the account holder.',
     },
@@ -57,12 +57,12 @@ const inventory = [
     {
         category: 'Aggregate analytics',
         source: 'Self-hosted Umami',
-        what: 'Page views and referrers on shoppingo.imapps.uk and the hosted app. No personal identifiers.',
+        what: 'Page views and referrers on tandra.uk and the hosted app. No personal identifiers.',
         why: 'To measure which parts of the product are used.',
     },
     {
         category: 'Public Discover publications',
-        source: 'shoppingo-api',
+        source: 'Tandra API',
         what: 'The username is shown only if the user ticks “show name”; the cover photo is copied to a public key.',
         why: 'To make shared recipes findable in Discover.',
     },
@@ -88,12 +88,12 @@ const lawfulBasis = [
     {
         purpose: 'Aggregate analytics on the hosted sites',
         basis: 'Statistical exception (UK GDPR §4(2)), with opt-out',
-        notes: 'Self-hosted Umami produces aggregate reports. The opt-out switch lives in app Settings (owned by shoppingo-gdpr-sweep).',
+        notes: 'Self-hosted Umami produces aggregate reports. The opt-out switch lives in app Settings (coming in a planned privacy update).',
     },
     {
         purpose: 'Session replay and any identified analytics',
         basis: 'Consent',
-        notes: 'Off by default. shoppingo-gdpr-sweep prompts once and stores the choice.',
+        notes: 'Off by default. A planned privacy update will prompt once and store the choice.',
     },
     {
         purpose: 'Voice transcripts sent to fal.ai',
@@ -115,7 +115,7 @@ const processors = [
         role: 'Tunnel, proxy, caching and DDoS protection in front of the hosted stack.',
         location: 'United States / global edge',
         transferMechanism: 'EU SCCs and ongoing adequacy decisions where applicable.',
-        data: 'Every request reaching shoppingo.imapps.uk and the hosted app.',
+        data: 'Every request reaching tandra.uk and the hosted app.',
     },
     {
         name: 'Google Firebase Cloud Messaging (FCM)',
@@ -133,7 +133,7 @@ const processors = [
     },
     {
         name: 'Self-hosted Umami',
-        role: 'Aggregate, cookie-less analytics on shoppingo.imapps.uk and the hosted app.',
+        role: 'Aggregate, cookie-less analytics on tandra.uk and the hosted app.',
         location: 'Server in the EU (imapps.uk)',
         transferMechanism: 'No transfer — self-hosted.',
         data: 'Page path, referrer, country (derived from IP), browser family. No personal identifiers.',
@@ -168,14 +168,14 @@ const retention = [
     {
         item: 'Account data and content',
         period: 'Until the user closes their account',
-        source: 'shoppingo-gdpr-sweep will add account deletion (typed confirmation) and data export.',
+        source: 'A planned privacy update will add account deletion (typed confirmation) and data export.',
     },
     {
         item: 'Umami aggregate analytics',
         period: 'As configured on the Umami instance',
         source: 'Self-hosted Umami retention setting.',
     },
-    { item: 'Session replays', period: '30 days', source: 'shoppingo-gdpr-sweep — replay storage TBD by that task.' },
+    { item: 'Session replays', period: '30 days', source: 'Replay storage is still to be decided.' },
     {
         item: 'Fal.ai inputs',
         period: 'Per fal.ai’s published retention',
@@ -191,10 +191,10 @@ const storage = [
         lifetime: 'Rolling; expires when the session ends or is revoked.',
     },
     {
-        name: 'shoppingo_app',
+        name: 'tandra_app',
         kind: 'Functional cookie',
         purpose:
-            'Set on imapps.uk by the app after you signed in, while the app lived on that domain, so visiting shoppingo.imapps.uk takes you straight to the app instead of this landing page. The app no longer sets it since moving to tandra.uk; existing copies expire on their own. Holds no identifier, only the value 1.',
+            'Set on tandra.uk by the app at app.tandra.uk after you sign in, so visiting tandra.uk takes you straight to the app instead of this landing page. Holds no identifier, only the value 1.',
         lifetime: '1 year.',
     },
     {
@@ -240,12 +240,12 @@ const rights = [
     { right: 'Rectification', what: 'Correction of inaccurate or incomplete data.' },
     {
         right: 'Erasure',
-        what: 'Deletion of your account and associated content (lists, recipes, photos, friendships, publications). Account deletion will require a typed confirmation and is being added by shoppingo-gdpr-sweep.',
+        what: 'Deletion of your account and associated content (lists, recipes, photos, friendships, publications). Account deletion will require a typed confirmation and is being added in a planned privacy update.',
     },
     { right: 'Restriction', what: 'Pausing processing while a complaint or query is resolved.' },
     {
         right: 'Portability',
-        what: 'A JSON download of your lists, items, recipes, meal plans, todos and friends. Provided by shoppingo-gdpr-sweep.',
+        what: 'A JSON download of your lists, items, recipes, meal plans, todos and friends. Coming in a planned privacy update.',
     },
     {
         right: 'Objection',
@@ -264,7 +264,7 @@ const rights = [
 
 <Layout
     title="Privacy notice"
-    description="What Shoppingo collects, why, where it is stored and the choices you have. The hosted service is run by the project maintainer."
+    description="What Tandra collects, why, where it is stored and the choices you have. The hosted service is run by the project maintainer."
 >
     <meta slot="head" name="robots" content="index,follow" />
 
@@ -273,8 +273,8 @@ const rights = [
             <p class="eyebrow">Legal</p>
             <h1 id="privacy-title">Privacy notice</h1>
             <p class="lede">
-                This notice explains what Shoppingo collects, why, where it is stored and what you can do with it. It
-                applies to shoppingo.imapps.uk (the landing site) and the hosted app at tandra.uk.
+                This notice explains what Tandra collects, why, where it is stored and what you can do with it. It
+                applies to tandra.uk (the landing site) and the hosted app at app.tandra.uk.
             </p>
             <p class="updated">Last updated: {lastUpdated}.</p>
         </header>
@@ -282,7 +282,7 @@ const rights = [
         <nav class="toc" aria-label="On this page">
             <h2>On this page</h2>
             <ol>
-                <li><a href="#who">Who runs Shoppingo</a></li>
+                <li><a href="#who">Who runs Tandra</a></li>
                 <li><a href="#what">What we collect</a></li>
                 <li><a href="#why">Why we collect it (lawful basis)</a></li>
                 <li><a href="#processors">Processors and where data goes</a></li>
@@ -294,15 +294,15 @@ const rights = [
         </nav>
 
         <section aria-labelledby="who">
-            <h2 id="who">Who runs Shoppingo</h2>
+            <h2 id="who">Who runs Tandra</h2>
             <p>
-                Shoppingo is an open-source project. The hosted version at <code>tandra.uk</code> is
+                Tandra is an open-source project. The hosted version at <code>app.tandra.uk</code> is
                 operated by the project maintainer as a small personal service. It is not a commercial product.
             </p>
             <dl class="contact">
                 <div>
                     <dt>Controller</dt>
-                    <dd>The maintainer of the <a href="https://github.com/igor-siergiej/shoppingo">Shoppingo repository</a>.</dd>
+                    <dd>The maintainer of the <a href="https://github.com/igor-siergiej/shoppingo">Tandra repository</a>.</dd>
                 </div>
                 <div>
                     <dt>Contact</dt>
@@ -318,9 +318,8 @@ const rights = [
         <section aria-labelledby="what">
             <h2 id="what">What we collect</h2>
             <p>
-                The table below lists every category of personal data the hosted stack handles. It is rebuilt from the
-                same inventory used by <code>shoppingo-gdpr-sweep</code>; the wording is deliberately close to that
-                document so the two stay in sync.
+                The table below lists every category of personal data the hosted stack handles. It is kept in step
+                with the project's internal data inventory.
             </p>
             <div class="table-wrap">
                 <table class="data-table">
@@ -475,7 +474,7 @@ const rights = [
             <p>
                 To exercise any of these rights, email <a href="mailto:igorsiergiej@gmail.com">igorsiergiej@gmail.com</a>
                 from the address on your account. For deletion and data export, the in-app controls under
-                <em>Settings → Account</em> are the fastest path once <code>shoppingo-gdpr-sweep</code> ships.
+                <em>Settings → Account</em> are the fastest path once the planned privacy update ships.
             </p>
         </section>
 
@@ -521,7 +520,7 @@ const rights = [
             </p>
         </section>
 
-        <p class="back-link"><a href="/">← Back to the Shoppingo homepage</a></p>
+        <p class="back-link"><a href="/">← Back to the Tandra homepage</a></p>
     </article>
 </Layout>
 

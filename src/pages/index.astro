@@ -31,8 +31,7 @@ const aisles = [
             'Two recipes that both need garlic make one garlic row, not two.',
         ],
         screen: listsScreen,
-        screenAlt:
-            'Three shared shopping lists in Shoppingo, each showing the initials of the people it is shared with.',
+        screenAlt: 'Three shared shopping lists in Tandra, each showing the initials of the people it is shared with.',
     },
     {
         id: 'recipes',
@@ -40,15 +39,15 @@ const aisles = [
         title: 'Your recipes, with the list built in',
         intro: 'Keep the recipes you actually cook in one place, then send their ingredients to a list with a few taps.',
         features: [
-            'Import a recipe from any link. Shoppingo pulls out the ingredients and method, and you check them before saving.',
-            'On Android, share a recipe page from your browser straight into Shoppingo.',
+            'Import a recipe from any link. Tandra pulls out the ingredients and method, and you check them before saving.',
+            'On Android, share a recipe page from your browser straight into Tandra.',
             'Change the number of portions and the quantities follow.',
             'Convert measurements to metric or imperial.',
             'Missing something? Ask for a substitute that works in that recipe.',
             'Share recipes with friends, and keep cooking times, servings and tags with each one.',
         ],
         screen: recipeScreen,
-        screenAlt: 'A Spaghetti Aglio e Olio recipe in Shoppingo, with a photo and its list of ingredients.',
+        screenAlt: 'A Spaghetti Aglio e Olio recipe in Tandra, with a photo and its list of ingredients.',
     },
     {
         id: 'discover',
@@ -62,26 +61,26 @@ const aisles = [
             'Publish your own recipes to the library if you want others to find them.',
         ],
         screen: discoverScreen,
-        screenAlt: 'The Discover page in Shoppingo, listing recipes with cooking times, servings, difficulty and tags.',
+        screenAlt: 'The Discover page in Tandra, listing recipes with cooking times, servings, difficulty and tags.',
     },
     {
         id: 'week',
         sign: 'The week',
         title: 'Plan the week, then shop for it',
-        intro: 'Put recipes on the days you’ll cook them and Shoppingo works out what to buy.',
+        intro: 'Put recipes on the days you’ll cook them and Tandra works out what to buy.',
         features: [
             'Drop recipes onto days and set the portions for each meal.',
             'Preview the shopping for the week and add it to a list in one go.',
             'A shared calendar for household to-dos, with reminders on your phone.',
         ],
         screen: mealPlanScreen,
-        screenAlt: 'A weekly meal plan in Shoppingo, with Kimchi planned for Monday at two portions.',
+        screenAlt: 'A weekly meal plan in Tandra, with Kimchi planned for Monday at two portions.',
     },
 ];
 
 const steps = [
     'Copy the link to a recipe from any website.',
-    'Paste it into Shoppingo, or share the page to Shoppingo from your browser.',
+    'Paste it into Tandra, or share the page to Tandra from your browser.',
     'Check the ingredients and method it found, then save.',
     'Tick the ingredients you need and add them to a list.',
 ];
@@ -110,9 +109,10 @@ const faqSchema = {
 <Layout title={siteConfig.title} description={siteConfig.description}>
     <script is:inline slot="head" define:vars={{ appUrl: siteConfig.appUrl }}>
         // Returning users skip the landing page; `/?home` always shows it. The edge function
-        // redirects on the `shoppingo_app` cookie the app set while it lived on imapps.uk. This covers people who used the
-        // app when it lived on this origin: their browser still holds its localStorage here.
-        // `?moved=1` tells the app to show its "reinstall from the new address" banner.
+        // redirects on the `tandra_app` cookie the app sets from app.tandra.uk. This covers people who
+        // used the app when it lived on this origin (tandra.uk, and shoppingo.imapps.uk before it): their
+        // browser still holds its localStorage here. `?moved=1` tells the app to show its "reinstall
+        // from the new address" banner.
         try {
             if (!new URLSearchParams(location.search).has('home') && localStorage.getItem('shoppingo:config')) {
                 location.replace(`${appUrl}/?moved=1`);
@@ -127,7 +127,7 @@ const faqSchema = {
     <header class="container topbar">
         <a href="/" class="brand">
             <Image src={logo} alt="" width={40} height={40} />
-            <span>Shoppingo</span>
+            <span>Tandra</span>
         </a>
         <nav aria-label="Main">
             <a href={siteConfig.repoUrl} class="nav-link">GitHub</a>
@@ -137,7 +137,7 @@ const faqSchema = {
 
     <section class="container hero" aria-labelledby="hero-title">
         <div class="hero-copy">
-            <h1 id="hero-title" class="sr-only">Shoppingo: a shared shopping list that builds itself from your recipes</h1>
+            <h1 id="hero-title" class="sr-only">Tandra: a shared shopping list that builds itself from your recipes</h1>
             <ul class="chores" aria-hidden="true">
                 {
                     chores.map((chore, index) => (
@@ -154,18 +154,18 @@ const faqSchema = {
                 <li class="last" style={`--i: ${chores.length}`}>Go shopping.</li>
             </ul>
             <p class="lede">
-                Shoppingo turns your recipes into a shopping list, sorts it by aisle and keeps it in sync with everyone you
+                Tandra turns your recipes into a shopping list, sorts it by aisle and keeps it in sync with everyone you
                 live with. It works in the shop even when there’s no signal.
             </p>
             <div class="actions">
-                <a href={siteConfig.appUrl} class="button">Open Shoppingo</a>
+                <a href={siteConfig.appUrl} class="button">Open Tandra</a>
                 <a href={`${siteConfig.appUrl}/try`} class="button button-quiet">Try it without an account</a>
                 <a href={siteConfig.repoUrl} class="button button-quiet">See the code</a>
             </div>
             <p class="small-print">Free and open source. Install it from your browser on iPhone or Android.</p>
         </div>
         <div class="hero-screen">
-            <Phone src={listScreen} alt="A shared Groceries list in Shoppingo with items ticked off." eager />
+            <Phone src={listScreen} alt="A shared Groceries list in Tandra with items ticked off." eager />
         </div>
     </section>
 
@@ -186,7 +186,7 @@ const faqSchema = {
         <div>
             <h2 id="open-title">Free, open source, and yours to run</h2>
             <p>
-                Shoppingo is built in the open under the AGPL licence. Use the hosted version, or start your own copy on any
+                Tandra is built in the open under the AGPL licence. Use the hosted version, or start your own copy on any
                 server with Docker. Bug reports, ideas and pull requests are welcome.
             </p>
             <div class="actions">
@@ -194,7 +194,7 @@ const faqSchema = {
                 <a href={`${siteConfig.repoUrl}/issues`} class="button button-quiet">Report a bug or suggest an idea</a>
             </div>
         </div>
-        <pre class="terminal" aria-label="Commands to self-host Shoppingo"><code><span class="prompt">$</span> git clone https://github.com/igor-siergiej/shoppingo
+        <pre class="terminal" aria-label="Commands to self-host Tandra"><code><span class="prompt">$</span> git clone https://github.com/igor-siergiej/shoppingo
 <span class="prompt">$</span> cd shoppingo/selfhost
 <span class="prompt">$</span> cp .env.example .env
 <span class="prompt">$</span> docker compose up -d</code></pre>

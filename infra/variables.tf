@@ -47,19 +47,19 @@ variable "price_class" {
 variable "domain_name" {
   description = "Domain the site serves on, inside cloudflare_zone (records in dns.tf). Empty skips ACM and DNS entirely and serves the site off its *.cloudfront.net URL with CloudFront's default certificate."
   type        = string
-  default     = "shoppingo.imapps.uk"
+  default     = "tandra.uk"
 }
 
 variable "cloudflare_zone" {
   description = "Cloudflare zone that holds domain_name and www.domain_name."
   type        = string
-  default     = "imapps.uk"
+  default     = "tandra.uk"
 }
 
 variable "app_url" {
-  description = "Origin of the Shoppingo app. The edge function sends old app deep links and returning users (shoppingo_app cookie, set by the app while it lived on imapps.uk) there."
+  description = "Origin of the Tandra app. The edge function sends old app deep links (from when the app lived on domain_name) and returning users (tandra_app cookie, set on domain_name by the app) there."
   type        = string
-  default     = "https://tandra.uk"
+  default     = "https://app.tandra.uk"
 }
 
 variable "tfstate_bucket" {

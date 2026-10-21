@@ -2,7 +2,7 @@
 @import "@fontsource-variable/bricolage-grotesque";
 @import "@fontsource-variable/montserrat";
 
-/* Palette taken from the Shoppingo app's own tokens so the site and the app read as one product. */
+/* Palette taken from the Tandra app's own tokens so the site and the app read as one product. */
 :root {
     --paper: oklch(0.96 0.015 80);
     --paper-deep: oklch(0.93 0.02 78);
