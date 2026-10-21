@@ -30,7 +30,7 @@ resource "cloudflare_dns_record" "cert_validation" {
   content = each.value.record
   proxied = false
   ttl     = 60
-  comment = "shoppingo-site ACM validation (Terraform)"
+  comment = "tandra-site ACM validation (Terraform)"
 }
 
 resource "aws_acm_certificate_validation" "site" {

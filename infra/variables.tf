@@ -7,7 +7,7 @@ variable "aws_region" {
 variable "project" {
   description = "Project name, used to prefix resource names."
   type        = string
-  default     = "shoppingo-site"
+  default     = "tandra-site"
 }
 
 variable "bucket_name" {
@@ -31,11 +31,11 @@ variable "github_repo" {
         gh api repos/OWNER/REPO/actions/oidc/customization/sub
 
     and copy `sub_claim_prefix` here verbatim, minus its leading 'repo:'
-    (e.g. 'igor-siergiej@79415930/shoppingo-site@1312344887'). Only if
+    (e.g. 'igor-siergiej@79415930/tandra-site@1312344887'). Only if
     `use_immutable_subject` is false does plain 'owner/repo' apply.
   DESC
   type        = string
-  default     = "igor-siergiej@79415930/shoppingo-site@1422058060"
+  default     = "igor-siergiej@79415930/tandra-site@1422058060"
 }
 
 variable "price_class" {
@@ -65,7 +65,7 @@ variable "app_url" {
 variable "tfstate_bucket" {
   description = "S3 bucket holding this project's Terraform state (must already exist — create it manually before the first `terraform init`; must match backend.tf's `bucket` value exactly)."
   type        = string
-  default     = "shoppingo-site-tfstate-777799876926"
+  default     = "tandra-site-tfstate-777799876926"
 
   validation {
     condition     = length(var.tfstate_bucket) > 0
