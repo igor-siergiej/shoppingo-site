@@ -43,7 +43,7 @@ export const siteConfig = {
      */
     business: undefined as LocalBusinessConfig | undefined,
     appUrl: 'https://app.tandra.uk',
-    repoUrl: 'https://github.com/igor-siergiej/shoppingo',
+    repoUrl: 'https://github.com/igor-siergiej/tandra',
     faqs: [
         {
             question: 'Is Tandra free?',
