@@ -1,3 +1,10 @@
+## [1.6.1](https://github.com/igor-siergiej/tandra-site/compare/v1.6.0...v1.6.1) (2026-10-21)
+
+
+### Bug Fixes
+
+* rename AWS resources and repo references to tandra-site ([#9](https://github.com/igor-siergiej/tandra-site/issues/9)) ([4a35a3b](https://github.com/igor-siergiej/tandra-site/commit/4a35a3baaaadd853a690df5a8b1d4b6675faa612))
+
 # [1.6.0](https://github.com/igor-siergiej/shoppingo-site/compare/v1.5.0...v1.6.0) (2026-10-21)
 
 
