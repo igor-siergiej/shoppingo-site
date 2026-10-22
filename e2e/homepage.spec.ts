@@ -1,5 +1,11 @@
 import { expect, test } from '@playwright/test';
 
+// The production build loads the Umami tracker; the @smoke run against https://tandra.uk must not
+// count as a visit. Umami's tracker checks this flag before every send.
+test.beforeEach(async ({ page }) => {
+    await page.addInitScript(() => localStorage.setItem('umami.disabled', '1'));
+});
+
 test('homepage renders the pitch, links to the app and has no console errors @smoke', async ({ page }) => {
     const errors: string[] = [];
     page.on('console', (msg) => {

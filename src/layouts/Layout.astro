@@ -12,6 +12,8 @@ export interface Props {
 }
 
 const { title, description, image } = Astro.props;
+const { analytics } = siteConfig;
+const trackVisits = new URL(siteConfig.url).hostname === analytics.domain;
 
 const orgSchema = siteConfig.business
     ? {
@@ -46,6 +48,17 @@ const orgSchema = siteConfig.business
 		<Seo title={title} description={description} image={image} />
 		<JsonLd schema={orgSchema} />
 		<slot name="head" />
+		{
+			trackVisits && (
+				<script
+					is:inline
+					defer
+					src={analytics.src}
+					data-website-id={analytics.websiteId}
+					data-domains={analytics.domain}
+				/>
+			)
+		}
 	</head>
 	<body>
 		<a

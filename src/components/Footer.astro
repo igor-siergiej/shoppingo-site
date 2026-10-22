@@ -8,9 +8,11 @@ const year = new Date().getFullYear();
     <div class="container footer-inner">
         <p>© {year} Tandra. Open source under the AGPL-3.0 licence.</p>
         <nav aria-label="Footer">
-            <a href={siteConfig.appUrl}>Open app</a>
-            <a href={siteConfig.repoUrl}>GitHub</a>
-            <a href={`${siteConfig.repoUrl}/issues`}>Issues</a>
+            <a href={siteConfig.appUrl} data-umami-event="open_app" data-umami-event-placement="footer">Open app</a>
+            <a href={siteConfig.repoUrl} data-umami-event="view_code" data-umami-event-placement="footer">GitHub</a>
+            <a href={`${siteConfig.repoUrl}/issues`} data-umami-event="report_issue" data-umami-event-placement="footer"
+                >Issues</a
+            >
             <a href="/privacy">Privacy</a>
         </nav>
     </div>

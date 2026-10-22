@@ -54,6 +54,16 @@ Playwright covers `e2e/homepage.spec.ts`.
 | `AWS_TERRAFORM_ROLE_ARN` | GitHub repo variable | `terraform.yml` plan/apply. |
 | `CLOUDFLARE_API_TOKEN` | GitHub repo secret | `terraform.yml` plan/apply: the `tandra.uk` records in `infra/dns.tf` and `infra/acm.tf`. Scope: Zone:Read + DNS:Edit on `tandra.uk` only. |
 
+## Analytics
+
+Production pages load the self-hosted Umami tracker from `https://app.tandra.uk/pulse/p.js`
+(`siteConfig.analytics`), the same Umami website as the app, so a landing visit and the sign-up
+that follows are one journey. It is only rendered when `SITE_URL` is on `tandra.uk`, and
+`data-domains` stops it sending from any other host. CTAs carry `data-umami-event`
+(`open_app`, `try_without_account`, `view_code`, `report_issue`) with a `placement` property
+(`nav`, `hero`, `open-source`, `footer`). The e2e specs set `localStorage['umami.disabled']` so
+the live smoke run isn't counted. Instance setup: `umami/README.md` in the `foundry` repo.
+
 ## CI / deploy
 
 - `pull-request.yml`: lint, test (+ typecheck), e2e (Chromium), Fallow audit.
