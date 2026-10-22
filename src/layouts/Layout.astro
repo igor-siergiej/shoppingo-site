@@ -50,13 +50,17 @@ const orgSchema = siteConfig.business
 		<slot name="head" />
 		{
 			trackVisits && (
-				<script
-					is:inline
-					defer
-					src={analytics.src}
-					data-website-id={analytics.websiteId}
-					data-domains={analytics.domain}
-				/>
+				<>
+					<script
+						is:inline
+						defer
+						src={analytics.src}
+						data-website-id={analytics.websiteId}
+						data-domains={analytics.domain}
+					/>
+					{/* Heatmaps. Deferred after the tracker; it only sends once the tracker has a session. */}
+					<script is:inline defer src={analytics.recorderSrc} data-website-id={analytics.websiteId} />
+				</>
 			)
 		}
 	</head>

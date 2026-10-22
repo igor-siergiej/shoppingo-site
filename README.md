@@ -61,8 +61,11 @@ Production pages load the self-hosted Umami tracker from `https://app.tandra.uk/
 that follows are one journey. It is only rendered when `SITE_URL` is on `tandra.uk`, and
 `data-domains` stops it sending from any other host. CTAs carry `data-umami-event`
 (`open_app`, `try_without_account`, `view_code`, `report_issue`) with a `placement` property
-(`nav`, `hero`, `open-source`, `footer`). The e2e specs set `localStorage['umami.disabled']` so
-the live smoke run isn't counted. Instance setup: `umami/README.md` in the `foundry` repo.
+(`nav`, `hero`, `open-source`, `footer`). Umami's heatmap recorder
+(`https://app.tandra.uk/pulse/recorder.js`) loads after the tracker and records click positions and
+scroll depth; it only sends once the tracker has a session. The e2e specs set
+`localStorage['umami.disabled']` so the live smoke run isn't counted. Instance setup:
+`umami/README.md` in the `foundry` repo.
 
 ## CI / deploy
 
