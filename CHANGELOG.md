@@ -1,3 +1,10 @@
+# [1.7.0](https://github.com/igor-siergiej/tandra-site/compare/v1.6.1...v1.7.0) (2026-10-22)
+
+
+### Features
+
+* track landing visits and click-throughs to the app in Umami ([#10](https://github.com/igor-siergiej/tandra-site/issues/10)) ([61e957f](https://github.com/igor-siergiej/tandra-site/commit/61e957fda3f26f049e06fcaff01481448d0e7bf1)), closes [#81](https://github.com/igor-siergiej/tandra-site/issues/81) [#138](https://github.com/igor-siergiej/tandra-site/issues/138)
+
 ## [1.6.1](https://github.com/igor-siergiej/tandra-site/compare/v1.6.0...v1.6.1) (2026-10-21)
 
 
