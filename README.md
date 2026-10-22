@@ -57,8 +57,9 @@ Playwright covers `e2e/homepage.spec.ts`.
 ## Analytics
 
 Production pages load the self-hosted Umami tracker from `https://app.tandra.uk/pulse/p.js`
-(`siteConfig.analytics`), the same Umami website as the app, so a landing visit and the sign-up
-that follows are one journey. It is only rendered when `SITE_URL` is on `tandra.uk`, and
+(`siteConfig.analytics`) and report to their own Umami website, "Tandra site", separate from the
+app's. Clicks through to the app show up in the app's website with `tandra.uk` as the referrer.
+It is only rendered when `SITE_URL` is on `tandra.uk`, and
 `data-domains` stops it sending from any other host. CTAs carry `data-umami-event`
 (`open_app`, `try_without_account`, `view_code`, `report_issue`) with a `placement` property
 (`nav`, `hero`, `open-source`, `footer`). Umami's heatmap recorder
