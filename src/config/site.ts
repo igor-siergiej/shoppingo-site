@@ -43,6 +43,17 @@ export const siteConfig = {
      */
     business: undefined as LocalBusinessConfig | undefined,
     appUrl: 'https://app.tandra.uk',
+    /**
+     * Self-hosted Umami (see the foundry repo's umami/README.md). Same website as the app, so a
+     * visit that starts here and signs up in the app is one journey in the reports. The tracker
+     * is only rendered when the build's `url` is on `domain`, and the tracker itself sends nothing
+     * from any other hostname (`data-domains`), so dev, preview and CI e2e stay silent.
+     */
+    analytics: {
+        src: 'https://app.tandra.uk/pulse/p.js',
+        websiteId: 'b07e19e2-6c29-432f-a4f1-fe280b7f3794',
+        domain: 'tandra.uk',
+    },
     repoUrl: 'https://github.com/igor-siergiej/tandra',
     faqs: [
         {
