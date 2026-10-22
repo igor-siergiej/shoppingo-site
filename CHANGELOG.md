@@ -1,3 +1,10 @@
+# [1.9.0](https://github.com/igor-siergiej/tandra-site/compare/v1.8.0...v1.9.0) (2026-10-22)
+
+
+### Features
+
+* report landing-site analytics to its own Umami website ([#12](https://github.com/igor-siergiej/tandra-site/issues/12)) ([2c3231c](https://github.com/igor-siergiej/tandra-site/commit/2c3231c036d2a25a0d8809e93a9b1bf804e9182a))
+
 # [1.8.0](https://github.com/igor-siergiej/tandra-site/compare/v1.7.0...v1.8.0) (2026-10-22)
 
 
