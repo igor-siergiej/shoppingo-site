@@ -51,6 +51,8 @@ export const siteConfig = {
      */
     analytics: {
         src: 'https://app.tandra.uk/pulse/p.js',
+        /** Umami's heatmap recorder (click positions, scroll depth); replay is off in the Umami website settings. */
+        recorderSrc: 'https://app.tandra.uk/pulse/recorder.js',
         websiteId: 'b07e19e2-6c29-432f-a4f1-fe280b7f3794',
         domain: 'tandra.uk',
     },
