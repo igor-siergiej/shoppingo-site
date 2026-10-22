@@ -44,16 +44,16 @@ export const siteConfig = {
     business: undefined as LocalBusinessConfig | undefined,
     appUrl: 'https://app.tandra.uk',
     /**
-     * Self-hosted Umami (see the foundry repo's umami/README.md). Same website as the app, so a
-     * visit that starts here and signs up in the app is one journey in the reports. The tracker
-     * is only rendered when the build's `url` is on `domain`, and the tracker itself sends nothing
-     * from any other hostname (`data-domains`), so dev, preview and CI e2e stay silent.
+     * Self-hosted Umami (see the foundry repo's umami/README.md). Its own "Tandra site" website,
+     * separate from the app's. The scripts are served from the app's host. The tracker is only
+     * rendered when the build's `url` is on `domain`, and the tracker itself sends nothing from any
+     * other hostname (`data-domains`), so dev, preview and CI e2e stay silent.
      */
     analytics: {
         src: 'https://app.tandra.uk/pulse/p.js',
         /** Umami's heatmap recorder (click positions, scroll depth); replay is off in the Umami website settings. */
         recorderSrc: 'https://app.tandra.uk/pulse/recorder.js',
-        websiteId: 'b07e19e2-6c29-432f-a4f1-fe280b7f3794',
+        websiteId: 'dfe972ee-98e3-4732-b9b0-2427252f1435',
         domain: 'tandra.uk',
     },
     repoUrl: 'https://github.com/igor-siergiej/tandra',
