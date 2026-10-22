@@ -1,3 +1,10 @@
+## [1.9.1](https://github.com/igor-siergiej/tandra-site/compare/v1.9.0...v1.9.1) (2026-10-22)
+
+
+### Bug Fixes
+
+* **infra:** let the Umami dashboard frame the site for heatmaps ([#13](https://github.com/igor-siergiej/tandra-site/issues/13)) ([07ae21f](https://github.com/igor-siergiej/tandra-site/commit/07ae21fe88555d29b43b52ebef3f8ab106fd65e7))
+
 # [1.9.0](https://github.com/igor-siergiej/tandra-site/compare/v1.8.0...v1.9.0) (2026-10-22)
 
 
