@@ -15,10 +15,19 @@ resource "aws_cloudfront_response_headers_policy" "security_headers" {
     }
 
     # SAMEORIGIN, not DENY: the Keystatic admin at /keystatic embeds the site in an
-    # iframe for live preview. Cross-origin framing is still blocked.
+    # iframe for live preview. Kept for browsers without CSP frame-ancestors.
     frame_options {
       frame_option = "SAMEORIGIN"
       override     = true
+    }
+
+    # The only CSP directive: who may frame the site. Browsers that support
+    # frame-ancestors ignore X-Frame-Options, so this is what actually applies. 'self' keeps the
+    # Keystatic preview working; the self-hosted Umami dashboard (LAN/tailnet only) draws its
+    # heatmaps over the live page in an iframe and shows a blocked-frame error without it.
+    content_security_policy {
+      content_security_policy = "frame-ancestors 'self' https://analytics.imapps.uk"
+      override                = true
     }
 
     referrer_policy {
