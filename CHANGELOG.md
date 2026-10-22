@@ -1,3 +1,10 @@
+# [1.8.0](https://github.com/igor-siergiej/tandra-site/compare/v1.7.0...v1.8.0) (2026-10-22)
+
+
+### Features
+
+* heatmaps on the landing site ([#11](https://github.com/igor-siergiej/tandra-site/issues/11)) ([917a5cb](https://github.com/igor-siergiej/tandra-site/commit/917a5cb306bbe192afb70337e1b9ce4e4bb9d2a2))
+
 # [1.7.0](https://github.com/igor-siergiej/tandra-site/compare/v1.6.1...v1.7.0) (2026-10-22)
 
 
