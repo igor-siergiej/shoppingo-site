@@ -1,3 +1,10 @@
+# [1.11.0](https://github.com/igor-siergiej/tandra-site/compare/v1.10.0...v1.11.0) (2026-10-24)
+
+
+### Features
+
+* recipe pages, a Why Tandra comparison and a Lighthouse budget ([#15](https://github.com/igor-siergiej/tandra-site/issues/15)) ([231d1b6](https://github.com/igor-siergiej/tandra-site/commit/231d1b6c31b5a6e76c384e02f23d88b1963a6d29))
+
 # [1.10.0](https://github.com/igor-siergiej/tandra-site/compare/v1.9.1...v1.10.0) (2026-10-24)
 
 
