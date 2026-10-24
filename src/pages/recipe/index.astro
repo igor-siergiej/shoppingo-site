@@ -1,0 +1,124 @@
+---
+import { siteConfig } from '@/config/site';
+import Layout from '@/layouts/Layout.astro';
+import { getRecipes, readableDuration } from '@/lib/discover';
+
+export const prerender = true;
+
+const recipes = await getRecipes();
+---
+
+<Layout
+    title="Free recipes from the Tandra library"
+    description="Recipes from the Tandra Discover library, most of them from the Wikibooks Cookbook. Open any recipe in Tandra to add its ingredients to your shopping list."
+>
+    <section class="container recipes" aria-labelledby="recipes-title">
+        <header class="head">
+            <p class="eyebrow"><a href="/">Tandra</a></p>
+            <h1 id="recipes-title">Recipes</h1>
+            <p class="lede">
+                A selection from the {siteConfig.name} Discover library. Open the app to search all of it, copy a recipe into
+                your own collection or add its ingredients to a shared list.
+            </p>
+        </header>
+
+        <ul class="grid">
+            {
+                recipes.map((recipe) => {
+                    const time = (recipe.prepTime ?? 0) + (recipe.cookTime ?? 0);
+                    return (
+                        <li>
+                            <a href={`/recipe/${recipe.slug}/`}>
+                                <span class="title">{recipe.title}</span>
+                                <span class="meta">
+                                    {[time && readableDuration(time), recipe.servings && `serves ${recipe.servings}`]
+                                        .filter(Boolean)
+                                        .join(' · ')}
+                                </span>
+                            </a>
+                        </li>
+                    );
+                })
+            }
+        </ul>
+    </section>
+</Layout>
+
+<style>
+    .recipes {
+        padding-block: 3rem 5rem;
+    }
+
+    .head {
+        padding-bottom: 2.5rem;
+        border-bottom: 2px dashed var(--rule);
+    }
+
+    .eyebrow {
+        margin: 0;
+        font-family: var(--font-display);
+        font-size: 0.95rem;
+        font-weight: 700;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+    }
+
+    .eyebrow a {
+        color: var(--forest);
+        text-decoration: none;
+    }
+
+    h1 {
+        margin: 0.5rem 0 0;
+        font-family: var(--font-display);
+        font-size: clamp(2.4rem, 1.6rem + 4vw, 3.8rem);
+        font-weight: 800;
+        letter-spacing: -0.02em;
+        line-height: 1.05;
+    }
+
+    .lede {
+        max-width: 50rem;
+        margin: 1.25rem 0 0;
+        color: var(--ink-soft);
+        font-size: 1.2rem;
+        line-height: 1.55;
+    }
+
+    .grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(16rem, 1fr));
+        gap: 1rem;
+        margin: 2.5rem 0 0;
+        padding: 0;
+        list-style: none;
+    }
+
+    .grid a {
+        display: grid;
+        gap: 0.35rem;
+        height: 100%;
+        padding: 1.1rem 1.25rem;
+        border: 1px solid var(--rule);
+        border-radius: 1rem;
+        color: var(--ink);
+        text-decoration: none;
+        transition: border-color 0.15s ease;
+    }
+
+    .grid a:hover {
+        border-color: var(--forest);
+    }
+
+    .title {
+        font-family: var(--font-display);
+        font-size: 1.2rem;
+        font-weight: 700;
+        line-height: 1.2;
+    }
+
+    .meta {
+        color: var(--ink-soft);
+        font-size: 0.95rem;
+    }
+</style>

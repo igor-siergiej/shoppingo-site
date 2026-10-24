@@ -94,6 +94,71 @@ const steps = [
     'Tick the ingredients you need and add them to a list.',
 ];
 
+const reasons = [
+    {
+        title: 'Free for the whole household',
+        text: 'No adverts, no subscription and no paying again for a second device. Meal planning and recipe import are there from the start.',
+    },
+    {
+        title: 'One list, updated for everyone',
+        text: 'Share a list with the people you live with and changes show up on every phone straight away.',
+    },
+    {
+        title: 'Works with no signal',
+        text: 'Tick items off in the shop and your changes sync as soon as you are back online.',
+    },
+    {
+        title: 'Open source and yours to run',
+        text: 'The code is public under the AGPL, and you can host your own copy with Docker Compose.',
+    },
+];
+
+// Each competitor cell is backed by that app's own website or UK App Store listing (checked 2026-10-24; sources in
+// tandra-site #121's PR). "Not listed" means the app's own pages don't mention it. Recheck prices before editing:
+// Paprika 4 is moving to a subscription.
+const rivals = ['AnyList', 'Bring!', 'Paprika 3'];
+const comparison = [
+    {
+        feature: 'Price',
+        tandra: 'Free',
+        rivals: [
+            'Free, or £9.99 a year for Complete (£14.99 for a household)',
+            'Free with adverts, or £8.99 a year for Premium',
+            '£4.99 on iPhone, £29.99 on Mac, each sold separately',
+        ],
+    },
+    {
+        feature: 'Shared lists for the household',
+        tandra: 'Free',
+        rivals: ['Free', 'Free', 'Share one login, and each person buys the app'],
+    },
+    {
+        feature: 'Import a recipe from a link',
+        tandra: 'Free',
+        rivals: ['5 recipes free, then Complete', 'Free', 'Included'],
+    },
+    {
+        feature: 'Weekly meal plan',
+        tandra: 'Free',
+        rivals: ['Complete only', 'Not listed', 'Included'],
+    },
+    {
+        feature: 'Use it on a computer',
+        tandra: 'Any browser',
+        rivals: ['Complete only', 'Web version', 'Mac and Windows apps, sold separately'],
+    },
+    {
+        feature: 'Open source, run your own copy',
+        tandra: 'Yes',
+        rivals: ['No', 'No', 'No'],
+    },
+    {
+        feature: 'App Store and Play Store app',
+        tandra: 'No, install it from your browser',
+        rivals: ['Yes', 'Yes', 'Yes'],
+    },
+];
+
 const appSchema = {
     '@type': 'SoftwareApplication',
     name: siteConfig.name,
@@ -239,7 +304,51 @@ const faqSchema = {
 <span class="prompt">$</span> docker compose up -d</code></pre>
     </section>
 
-    <section class="container faq" aria-labelledby="faq-title">
+    <section class="container why" aria-labelledby="why-title">
+        <h2 id="why-title">Why Tandra</h2>
+        <ul class="reasons">
+            {
+                reasons.map((reason) => (
+                    <li>
+                        <strong>{reason.title}</strong>
+                        <span>{reason.text}</span>
+                    </li>
+                ))
+            }
+        </ul>
+        <div class="table-wrap" tabindex="0" role="region" aria-labelledby="compare-caption">
+            <table class="compare">
+                <caption id="compare-caption">How Tandra compares with AnyList, Bring! and Paprika</caption>
+                <thead>
+                    <tr>
+                        <td></td>
+                        <th scope="col">Tandra</th>
+                        {rivals.map((rival) => <th scope="col">{rival}</th>)}
+                    </tr>
+                </thead>
+                <tbody>
+                    {
+                        comparison.map((row) => (
+                            <tr>
+                                <th scope="row">{row.feature}</th>
+                                <td class="ours">{row.tandra}</td>
+                                {row.rivals.map((cell) => (
+                                    <td>{cell}</td>
+                                ))}
+                            </tr>
+                        ))
+                    }
+                </tbody>
+            </table>
+        </div>
+        <p class="small-print">
+            Prices and features from each app’s own website and UK App Store listing, checked October 2026. “Not listed”
+            means the app’s own pages don’t mention it. Still deciding? The <a href="#faq">questions below</a> cover
+            offline use, privacy and running your own copy.
+        </p>
+    </section>
+
+    <section id="faq" class="container faq" aria-labelledby="faq-title">
         <h2 id="faq-title">Questions</h2>
         <div class="faq-list">
             {
@@ -300,45 +409,6 @@ const faqSchema = {
     .nav-link:hover {
         text-decoration: underline;
         text-underline-offset: 4px;
-    }
-
-    .button {
-        display: inline-flex;
-        align-items: center;
-        justify-content: center;
-        min-height: 3rem;
-        padding: 0.7rem 1.4rem;
-        border: 2px solid var(--forest);
-        border-radius: 999px;
-        background: var(--forest);
-        color: var(--on-forest);
-        font-weight: 700;
-        text-align: center;
-        text-decoration: none;
-        transition: background-color 0.15s ease;
-    }
-
-    .button:hover {
-        background: var(--forest-deep);
-        border-color: var(--forest-deep);
-    }
-
-    .button-quiet {
-        background: transparent;
-        color: var(--ink);
-        border-color: var(--rule);
-    }
-
-    .button-quiet:hover {
-        background: var(--paper-deep);
-        border-color: var(--ink-soft);
-    }
-
-    .button-small {
-        min-height: 2.5rem;
-        padding: 0.4rem 1.1rem;
-        font-size: 0.95rem;
-        white-space: nowrap;
     }
 
     .hero {
@@ -588,5 +658,104 @@ const faqSchema = {
         max-width: 60ch;
         margin: 0 0 1.25rem;
         color: var(--ink-soft);
+    }
+
+    .why {
+        padding-block: 5rem 4rem;
+        border-top: 2px dashed var(--rule);
+    }
+
+    .reasons {
+        display: grid;
+        gap: 1.5rem;
+        margin: 2.5rem 0 0;
+        padding: 0;
+        list-style: none;
+    }
+
+    @media (min-width: 760px) {
+        .reasons {
+            grid-template-columns: repeat(2, 1fr);
+            gap: 2rem 3rem;
+        }
+    }
+
+    .reasons li {
+        display: grid;
+        align-content: start;
+        gap: 0.3rem;
+    }
+
+    .reasons strong {
+        font-family: var(--font-display);
+        font-size: 1.25rem;
+    }
+
+    .reasons span {
+        color: var(--ink-soft);
+    }
+
+    .table-wrap {
+        margin-top: 3rem;
+        overflow-x: auto;
+        border: 1px solid var(--rule);
+        border-radius: 1rem;
+    }
+
+    .compare {
+        width: 100%;
+        min-width: 44rem;
+        border-collapse: collapse;
+        font-size: 0.95rem;
+        line-height: 1.4;
+    }
+
+    .compare caption {
+        padding: 1rem 1.25rem 0;
+        color: var(--ink-soft);
+        font-weight: 600;
+        text-align: left;
+    }
+
+    .compare th,
+    .compare td {
+        padding: 0.8rem 1rem;
+        border-bottom: 1px solid var(--rule);
+        text-align: left;
+        vertical-align: top;
+    }
+
+    .compare tbody tr:last-child > * {
+        border-bottom: 0;
+    }
+
+    .compare thead th {
+        font-family: var(--font-display);
+        font-size: 1.1rem;
+    }
+
+    /* The feature names stay in view while the table scrolls sideways on a phone. */
+    .compare tbody th {
+        position: sticky;
+        left: 0;
+        width: 8.5rem;
+        background: var(--paper);
+        font-weight: 700;
+    }
+
+    @media (min-width: 860px) {
+        .compare tbody th {
+            width: 13rem;
+        }
+    }
+
+    .compare .ours {
+        background: color-mix(in oklch, var(--sprout) 55%, transparent);
+        font-weight: 700;
+    }
+
+    .why .small-print a {
+        color: var(--ink);
+        font-weight: 600;
     }
 </style>

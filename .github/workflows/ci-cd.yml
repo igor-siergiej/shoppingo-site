@@ -3,6 +3,11 @@ name: CI/CD
 on:
   push:
     branches: [main]
+  # Nightly rebuild: the /recipe/* pages are rendered at build time from the app's public Discover API, so this is
+  # what picks up new, edited and removed library recipes. A failed API fetch fails the build, so nothing deploys.
+  schedule:
+    - cron: '23 3 * * *'
+  workflow_dispatch:
 
 jobs:
   lint:
@@ -87,6 +92,8 @@ jobs:
       packages: read
     env:
       HUSKY: 0 # semantic-release's release commit must skip the commitlint hook
+    # Nightly and manual runs only rebuild content; there are no new commits to release.
+    if: github.event_name == 'push'
     steps:
       - uses: actions/checkout@v6
         with:
@@ -146,6 +153,13 @@ jobs:
           aws s3 sync dist/images "s3://${{ vars.S3_BUCKET }}/images" \
             --delete \
             --cache-control "public, max-age=3600"
+      - name: Upload recipe pages (CDN-cached for a day)
+        run: |
+          # Rebuilt nightly from the Discover API and nowhere else, so CloudFront can hold them for a day
+          # (s-maxage) while browsers still revalidate (max-age=0). Every deploy invalidates /* below.
+          aws s3 sync dist/recipe "s3://${{ vars.S3_BUCKET }}/recipe" \
+            --delete \
+            --cache-control "public, max-age=0, s-maxage=86400, must-revalidate"
       - name: Upload everything else — pages, feeds, robots.txt (no-cache)
         run: |
           # Every page (including nested routes like /posts/first-post/index.html and
@@ -156,6 +170,7 @@ jobs:
             --delete \
             --exclude "_astro/*" \
             --exclude "images/*" \
+            --exclude "recipe/*" \
             --cache-control "no-cache, no-store, must-revalidate"
       - name: Invalidate CloudFront
         run: |

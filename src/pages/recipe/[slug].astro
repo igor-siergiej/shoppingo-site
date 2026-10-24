@@ -1,0 +1,276 @@
+---
+import JsonLd from '@/components/JsonLd.astro';
+import { siteConfig } from '@/config/site';
+import Layout from '@/layouts/Layout.astro';
+import {
+    type DiscoverRecipe,
+    getRecipes,
+    ingredientLine,
+    isoDuration,
+    licenceFor,
+    readableDuration,
+} from '@/lib/discover';
+
+export const prerender = true;
+
+export async function getStaticPaths() {
+    const recipes = await getRecipes();
+    return recipes.map((recipe) => ({ params: { slug: recipe.slug }, props: { recipe } }));
+}
+
+interface Props {
+    recipe: DiscoverRecipe;
+}
+
+const { recipe } = Astro.props;
+const licence = licenceFor(recipe.licence);
+const ingredients = recipe.ingredients.map(ingredientLine);
+const totalTime = (recipe.prepTime ?? 0) + (recipe.cookTime ?? 0);
+const appLink = `${siteConfig.appUrl}/discover/${encodeURIComponent(recipe.id)}`;
+const author =
+    recipe.source === 'wikibooks' ? 'Wikibooks Cookbook contributors' : (recipe.publishedBy ?? 'A Tandra user');
+
+const facts = [
+    recipe.prepTime && { label: 'Prep', value: readableDuration(recipe.prepTime) },
+    recipe.cookTime && { label: 'Cook', value: readableDuration(recipe.cookTime) },
+    recipe.servings && { label: 'Serves', value: String(recipe.servings) },
+    recipe.difficulty && {
+        label: 'Difficulty',
+        value: recipe.difficulty.charAt(0).toUpperCase() + recipe.difficulty.slice(1),
+    },
+].filter((fact): fact is { label: string; value: string } => Boolean(fact));
+
+const description = `${recipe.title}: ${ingredients.length} ingredients${
+    totalTime ? `, ready in ${readableDuration(totalTime)}` : ''
+}. A free recipe from the Tandra library. Add the ingredients to your shopping list in one tap.`;
+
+const recipeSchema = {
+    '@type': 'Recipe',
+    name: recipe.title,
+    description,
+    url: new URL(`/recipe/${recipe.slug}/`, siteConfig.url).toString(),
+    author: { '@type': recipe.source === 'wikibooks' ? 'Organization' : 'Person', name: author },
+    isBasedOn: recipe.sourceUrl,
+    ...(licence.url && { license: licence.url }),
+    keywords: recipe.tags.join(', '),
+    ...(recipe.prepTime && { prepTime: isoDuration(recipe.prepTime) }),
+    ...(recipe.cookTime && { cookTime: isoDuration(recipe.cookTime) }),
+    ...(totalTime && { totalTime: isoDuration(totalTime) }),
+    ...(recipe.servings && { recipeYield: `${recipe.servings} servings` }),
+    recipeIngredient: ingredients,
+    recipeInstructions: recipe.instructions.map((text) => ({ '@type': 'HowToStep', text })),
+};
+---
+
+<Layout title={`${recipe.title} recipe`} description={description}>
+    <JsonLd schema={recipeSchema} />
+
+    <article class="container recipe" aria-labelledby="recipe-title">
+        <header class="head">
+            <p class="eyebrow"><a href="/recipe/">Recipes</a></p>
+            <h1 id="recipe-title">{recipe.title}</h1>
+            {
+                facts.length > 0 && (
+                    <dl class="facts">
+                        {facts.map((fact) => (
+                            <div>
+                                <dt>{fact.label}</dt>
+                                <dd>{fact.value}</dd>
+                            </div>
+                        ))}
+                    </dl>
+                )
+            }
+            <div class="actions">
+                <a href={appLink} class="button" data-umami-event="add_to_list" data-umami-event-placement="recipe"
+                    >Add to my list</a
+                >
+                <a href="/" class="button button-quiet">What is Tandra?</a>
+            </div>
+        </header>
+
+        <div class="body">
+            <section aria-labelledby="ingredients-title">
+                <h2 id="ingredients-title">Ingredients</h2>
+                <ul class="ingredients">{ingredients.map((line) => <li>{line}</li>)}</ul>
+            </section>
+
+            <section aria-labelledby="method-title">
+                <h2 id="method-title">Method</h2>
+                <ol class="method">{recipe.instructions.map((step) => <li>{step}</li>)}</ol>
+            </section>
+        </div>
+
+        {
+            recipe.tags.length > 0 && (
+                <ul class="tags" aria-label="Tags">
+                    {recipe.tags.map((tag) => (
+                        <li>{tag}</li>
+                    ))}
+                </ul>
+            )
+        }
+
+        <footer class="credit">
+            <p>
+                {
+                    recipe.source === 'wikibooks' ? (
+                        <>
+                            Adapted from <a href={recipe.sourceUrl}>“{recipe.title}”</a> in the Wikibooks Cookbook, by
+                            its contributors.
+                        </>
+                    ) : (
+                        <>Published to the Tandra library by {author}.</>
+                    )
+                }{' '}
+                Licensed under {licence.url ? <a href={licence.url} rel="license">{licence.name}</a> : licence.name}.
+                {
+                    recipe.source === 'wikibooks' &&
+                        ' Tandra split the ingredients into quantities and units and may have estimated missing times and servings.'
+                }
+            </p>
+        </footer>
+    </article>
+</Layout>
+
+<style>
+    .recipe {
+        padding-block: 3rem 5rem;
+    }
+
+    .head {
+        padding-bottom: 2.5rem;
+        border-bottom: 2px dashed var(--rule);
+    }
+
+    .eyebrow {
+        margin: 0;
+        font-family: var(--font-display);
+        font-size: 0.95rem;
+        font-weight: 700;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+    }
+
+    .eyebrow a {
+        color: var(--forest);
+        text-decoration: none;
+    }
+
+    h1 {
+        margin: 0.5rem 0 0;
+        font-family: var(--font-display);
+        font-size: clamp(2.4rem, 1.6rem + 4vw, 3.8rem);
+        font-weight: 800;
+        letter-spacing: -0.02em;
+        line-height: 1.05;
+        text-wrap: balance;
+    }
+
+    .facts {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.75rem 2rem;
+        margin: 1.5rem 0 0;
+    }
+
+    .facts dt {
+        color: var(--ink-soft);
+        font-size: 0.85rem;
+        font-weight: 700;
+        letter-spacing: 0.06em;
+        text-transform: uppercase;
+    }
+
+    .facts dd {
+        margin: 0;
+        font-size: 1.15rem;
+        font-weight: 600;
+    }
+
+    .actions {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.75rem;
+        margin-top: 2rem;
+    }
+
+    .body {
+        display: grid;
+        gap: 3rem;
+        padding-top: 3rem;
+    }
+
+    @media (min-width: 860px) {
+        .body {
+            grid-template-columns: 0.8fr 1.2fr;
+            gap: 4rem;
+        }
+    }
+
+    h2 {
+        margin: 0 0 1rem;
+        font-family: var(--font-display);
+        font-size: 1.75rem;
+        font-weight: 700;
+    }
+
+    .ingredients {
+        margin: 0;
+        padding: 0;
+        list-style: none;
+    }
+
+    .ingredients li {
+        padding-block: 0.6rem;
+        border-bottom: 1px solid var(--rule);
+    }
+
+    .method {
+        display: grid;
+        gap: 1.25rem;
+        margin: 0;
+        padding-left: 1.5rem;
+        list-style: decimal;
+    }
+
+    .method li::marker {
+        color: var(--forest);
+        font-family: var(--font-display);
+        font-weight: 700;
+    }
+
+    .tags {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.5rem;
+        margin: 3rem 0 0;
+        padding: 0;
+        list-style: none;
+    }
+
+    .tags li {
+        padding: 0.2rem 0.8rem;
+        border-radius: 999px;
+        background: var(--paper-deep);
+        color: var(--ink-soft);
+        font-size: 0.9rem;
+    }
+
+    .credit {
+        margin-top: 3rem;
+        padding-top: 2rem;
+        border-top: 1px dashed var(--rule);
+        color: var(--ink-soft);
+        font-size: 0.95rem;
+    }
+
+    .credit p {
+        max-width: 70ch;
+        margin: 0;
+    }
+
+    .credit a {
+        color: var(--ink);
+    }
+</style>
