@@ -1,3 +1,10 @@
+# [1.10.0](https://github.com/igor-siergiej/tandra-site/compare/v1.9.1...v1.10.0) (2026-10-24)
+
+
+### Features
+
+* show dark-mode app screenshots on the dark landing page ([#14](https://github.com/igor-siergiej/tandra-site/issues/14)) ([9dc21ae](https://github.com/igor-siergiej/tandra-site/commit/9dc21ae8a1c6c1fc8302d0ed51305a47266172e5))
+
 ## [1.9.1](https://github.com/igor-siergiej/tandra-site/compare/v1.9.0...v1.9.1) (2026-10-22)
 
 
