@@ -50,7 +50,8 @@ const recipeSchema = {
     description,
     url: new URL(`/recipe/${recipe.slug}/`, siteConfig.url).toString(),
     author: { '@type': recipe.source === 'wikibooks' ? 'Organization' : 'Person', name: author },
-    isBasedOn: recipe.sourceUrl,
+    // A user-published recipe's sourceUrl is its own path in the app, not an original it was based on.
+    ...(recipe.source === 'wikibooks' && { isBasedOn: recipe.sourceUrl }),
     ...(licence.url && { license: licence.url }),
     keywords: recipe.tags.join(', '),
     ...(recipe.prepTime && { prepTime: isoDuration(recipe.prepTime) }),

@@ -20,8 +20,9 @@ jobs:
       - name: Pick a recipe page
         id: recipe
         run: |
-          slug=$(curl -fsS 'https://app.tandra.uk/api/public/discover/recipes?pageSize=1' | jq -r '.items[0].slug')
-          echo "url=https://tandra.uk/recipe/${slug}/" >> "$GITHUB_OUTPUT"
+          # From the deployed index, not the API: a recipe published since the last build has no page yet.
+          path=$(curl -fsS https://tandra.uk/recipe/ | grep -o 'href="/recipe/[a-z0-9-]*/"' | head -1 | cut -d'"' -f2)
+          echo "url=https://tandra.uk${path}" >> "$GITHUB_OUTPUT"
       - name: Run Lighthouse CI
         run: |
           npx --yes @lhci/cli@0.15.x autorun \
