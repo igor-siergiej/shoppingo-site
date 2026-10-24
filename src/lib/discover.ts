@@ -8,7 +8,7 @@
 const API_BASE = (typeof process !== 'undefined' ? process.env.DISCOVER_API_URL : undefined) || 'https://app.tandra.uk';
 
 /** How many library recipes get a static page: the first page of the public list, newest first. */
-export const RECIPE_PAGE_COUNT = 50;
+const RECIPE_PAGE_COUNT = 50;
 
 /** Shapes mirror `PublicDiscoveryRecipeSummary` / `PublicDiscoveryRecipe` in tandra `packages/types`. */
 export interface DiscoverIngredient {

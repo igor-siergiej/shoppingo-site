@@ -1,0 +1,48 @@
+---
+interface Props {
+    /** Small link above the title, back to the parent page. */
+    eyebrow: { label: string; href: string };
+    title: string;
+    /** Id for the h1, for the enclosing landmark's aria-labelledby. */
+    titleId: string;
+}
+
+const { eyebrow, title, titleId } = Astro.props;
+---
+
+<header class="head">
+    <p class="eyebrow"><a href={eyebrow.href}>{eyebrow.label}</a></p>
+    <h1 id={titleId}>{title}</h1>
+    <slot />
+</header>
+
+<style>
+    .head {
+        padding-bottom: 2.5rem;
+        border-bottom: 2px dashed var(--rule);
+    }
+
+    .eyebrow {
+        margin: 0;
+        font-family: var(--font-display);
+        font-size: 0.95rem;
+        font-weight: 700;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+    }
+
+    .eyebrow a {
+        color: var(--forest);
+        text-decoration: none;
+    }
+
+    h1 {
+        margin: 0.5rem 0 0;
+        font-family: var(--font-display);
+        font-size: clamp(2.4rem, 1.6rem + 4vw, 3.8rem);
+        font-weight: 800;
+        letter-spacing: -0.02em;
+        line-height: 1.05;
+        text-wrap: balance;
+    }
+</style>

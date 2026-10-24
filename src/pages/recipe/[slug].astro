@@ -1,5 +1,6 @@
 ---
 import JsonLd from '@/components/JsonLd.astro';
+import PageHeader from '@/components/PageHeader.astro';
 import { siteConfig } from '@/config/site';
 import Layout from '@/layouts/Layout.astro';
 import {
@@ -67,9 +68,7 @@ const recipeSchema = {
     <JsonLd schema={recipeSchema} />
 
     <article class="container recipe" aria-labelledby="recipe-title">
-        <header class="head">
-            <p class="eyebrow"><a href="/recipe/">Recipes</a></p>
-            <h1 id="recipe-title">{recipe.title}</h1>
+        <PageHeader eyebrow={{ label: 'Recipes', href: '/recipe/' }} title={recipe.title} titleId="recipe-title">
             {
                 facts.length > 0 && (
                     <dl class="facts">
@@ -88,7 +87,7 @@ const recipeSchema = {
                 >
                 <a href="/" class="button button-quiet">What is Tandra?</a>
             </div>
-        </header>
+        </PageHeader>
 
         <div class="body">
             <section aria-labelledby="ingredients-title">
@@ -137,35 +136,6 @@ const recipeSchema = {
 <style>
     .recipe {
         padding-block: 3rem 5rem;
-    }
-
-    .head {
-        padding-bottom: 2.5rem;
-        border-bottom: 2px dashed var(--rule);
-    }
-
-    .eyebrow {
-        margin: 0;
-        font-family: var(--font-display);
-        font-size: 0.95rem;
-        font-weight: 700;
-        letter-spacing: 0.08em;
-        text-transform: uppercase;
-    }
-
-    .eyebrow a {
-        color: var(--forest);
-        text-decoration: none;
-    }
-
-    h1 {
-        margin: 0.5rem 0 0;
-        font-family: var(--font-display);
-        font-size: clamp(2.4rem, 1.6rem + 4vw, 3.8rem);
-        font-weight: 800;
-        letter-spacing: -0.02em;
-        line-height: 1.05;
-        text-wrap: balance;
     }
 
     .facts {
