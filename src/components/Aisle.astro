@@ -9,11 +9,12 @@ interface Props {
     intro: string;
     features: string[];
     screen: ImageMetadata;
+    screenDark: ImageMetadata;
     screenAlt: string;
     flip?: boolean;
 }
 
-const { id, sign, title, intro, features, screen, screenAlt, flip = false } = Astro.props;
+const { id, sign, title, intro, features, screen, screenDark, screenAlt, flip = false } = Astro.props;
 ---
 
 <section class:list={['aisle', { flip }]} aria-labelledby={`${id}-title`}>
@@ -26,7 +27,7 @@ const { id, sign, title, intro, features, screen, screenAlt, flip = false } = As
         </ul>
     </div>
     <div class="screen">
-        <Phone src={screen} alt={screenAlt} />
+        <Phone src={screen} darkSrc={screenDark} alt={screenAlt} />
     </div>
 </section>
 

@@ -6,10 +6,15 @@ import Phone from '@/components/Phone.astro';
 import { siteConfig } from '@/config/site';
 import logo from '@/assets/logo.png';
 import discoverScreen from '@/assets/screens/discover.png';
+import discoverScreenDark from '@/assets/screens/discover-dark.png';
 import listScreen from '@/assets/screens/list-items.png';
+import listScreenDark from '@/assets/screens/list-items-dark.png';
 import listsScreen from '@/assets/screens/lists.png';
+import listsScreenDark from '@/assets/screens/lists-dark.png';
 import mealPlanScreen from '@/assets/screens/meal-plan.png';
+import mealPlanScreenDark from '@/assets/screens/meal-plan-dark.png';
 import recipeScreen from '@/assets/screens/recipe-detail.png';
+import recipeScreenDark from '@/assets/screens/recipe-detail-dark.png';
 import Layout from '../layouts/Layout.astro';
 
 export const prerender = true;
@@ -31,6 +36,7 @@ const aisles = [
             'Two recipes that both need garlic make one garlic row, not two.',
         ],
         screen: listsScreen,
+        screenDark: listsScreenDark,
         screenAlt: 'Three shared shopping lists in Tandra, each showing the initials of the people it is shared with.',
     },
     {
@@ -47,6 +53,7 @@ const aisles = [
             'Share recipes with friends, and keep cooking times, servings and tags with each one.',
         ],
         screen: recipeScreen,
+        screenDark: recipeScreenDark,
         screenAlt: 'A Spaghetti Aglio e Olio recipe in Tandra, with a photo and its list of ingredients.',
     },
     {
@@ -61,6 +68,7 @@ const aisles = [
             'Publish your own recipes to the library if you want others to find them.',
         ],
         screen: discoverScreen,
+        screenDark: discoverScreenDark,
         screenAlt: 'The Discover page in Tandra, listing recipes with cooking times, servings, difficulty and tags.',
     },
     {
@@ -74,6 +82,7 @@ const aisles = [
             'A shared calendar for household to-dos, with reminders on your phone.',
         ],
         screen: mealPlanScreen,
+        screenDark: mealPlanScreenDark,
         screenAlt: 'A weekly meal plan in Tandra, with Kimchi planned for Monday at two portions.',
     },
 ];
@@ -185,7 +194,7 @@ const faqSchema = {
             <p class="small-print">Free and open source. Install it from your browser on iPhone or Android.</p>
         </div>
         <div class="hero-screen">
-            <Phone src={listScreen} alt="A shared Groceries list in Tandra with items ticked off." eager />
+            <Phone src={listScreen} darkSrc={listScreenDark} alt="A shared Groceries list in Tandra with items ticked off." eager />
         </div>
     </section>
 
