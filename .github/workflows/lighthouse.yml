@@ -1,0 +1,31 @@
+name: Lighthouse
+
+# Lighthouse CI against the live site after every deploy (including the nightly recipe rebuild). Lighthouse's
+# default mobile profile: a mid-range phone on throttled 4G. Budgets are in lighthouserc.json (performance 90+,
+# SEO 95+). Umami's bot filter drops Lighthouse's visits, so these runs don't count as traffic.
+on:
+  workflow_run:
+    workflows: [CI/CD]
+    types: [completed]
+  workflow_dispatch:
+
+jobs:
+  lighthouse:
+    if: github.event_name == 'workflow_dispatch' || github.event.workflow_run.conclusion == 'success'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v6
+      - name: Pick a recipe page
+        id: recipe
+        run: |
+          # From the deployed index, not the API: a recipe published since the last build has no page yet.
+          path=$(curl -fsS https://tandra.uk/recipe/ | grep -o 'href="/recipe/[a-z0-9-]*/"' | head -1 | cut -d'"' -f2)
+          echo "url=https://tandra.uk${path}" >> "$GITHUB_OUTPUT"
+      - name: Run Lighthouse CI
+        run: |
+          npx --yes @lhci/cli@0.15.x autorun \
+            --collect.url=https://tandra.uk/ \
+            --collect.url=https://tandra.uk/recipe/ \
+            --collect.url=${{ steps.recipe.outputs.url }}

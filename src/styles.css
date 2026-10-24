@@ -74,6 +74,46 @@
     }
 }
 
+/* Shared by the home page and the recipe pages. Unlayered, like the page styles they came from. */
+.button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 3rem;
+    padding: 0.7rem 1.4rem;
+    border: 2px solid var(--forest);
+    border-radius: 999px;
+    background: var(--forest);
+    color: var(--on-forest);
+    font-weight: 700;
+    text-align: center;
+    text-decoration: none;
+    transition: background-color 0.15s ease;
+}
+
+.button:hover {
+    background: var(--forest-deep);
+    border-color: var(--forest-deep);
+}
+
+.button-quiet {
+    background: transparent;
+    color: var(--ink);
+    border-color: var(--rule);
+}
+
+.button-quiet:hover {
+    background: var(--paper-deep);
+    border-color: var(--ink-soft);
+}
+
+.button-small {
+    min-height: 2.5rem;
+    padding: 0.4rem 1.1rem;
+    font-size: 0.95rem;
+    white-space: nowrap;
+}
+
 @media (prefers-reduced-motion: reduce) {
     *,
     *::before,

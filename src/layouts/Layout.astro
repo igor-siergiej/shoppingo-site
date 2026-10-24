@@ -58,8 +58,22 @@ const orgSchema = siteConfig.business
 						data-website-id={analytics.websiteId}
 						data-domains={analytics.domain}
 					/>
-					{/* Heatmaps. Deferred after the tracker; it only sends once the tracker has a session. */}
-					<script is:inline defer src={analytics.recorderSrc} data-website-id={analytics.websiteId} />
+					{/*
+						Heatmaps. The recorder is ~60 KB of script that held the main thread for ~3 s on a throttled
+						phone, so it loads on the visitor's first scroll, tap or key press instead of with the page.
+						It only sends once the tracker has a session.
+					*/}
+					<script is:inline define:vars={{ recorderSrc: analytics.recorderSrc, websiteId: analytics.websiteId }}>
+						const events = ['scroll', 'pointerdown', 'touchstart', 'keydown'];
+						const load = () => {
+							for (const name of events) removeEventListener(name, load);
+							const script = document.createElement('script');
+							script.src = recorderSrc;
+							script.dataset.websiteId = websiteId;
+							document.head.append(script);
+						};
+						for (const name of events) addEventListener(name, load, { passive: true });
+					</script>
 				</>
 			)
 		}

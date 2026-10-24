@@ -40,16 +40,18 @@ bun run test           # vitest
 bun run test:e2e       # playwright
 ```
 
-Dev server needs no env. `bun run test:e2e` serves the existing `dist/` via `bun run preview`,
+Dev server needs no env, but every build (dev included) fetches the recipe pages from the app's public
+Discover API, so it needs network access. `bun run test:e2e` serves the existing `dist/` via `bun run preview`,
 so run `bun run build` first. CI also runs `bunx astro sync`, `tsc --noEmit` and
-`bun run typecheck` (`astro check`). There are currently no vitest test files under `src/`;
-Playwright covers `e2e/homepage.spec.ts`.
+`bun run typecheck` (`astro check`). Vitest covers `src/**/*.test.ts`; Playwright covers `e2e/*.spec.ts`
+(`@smoke` specs also run against production after a deploy).
 
 ## Environment
 
 | Name | Where | Purpose |
 |------|-------|---------|
 | `SITE_URL` | `.env` / GitHub repo variable | Astro `site` (canonical, OG, sitemap). Unset falls back to `http://localhost:4321`. |
+| `DISCOVER_API_URL` | `.env` (optional) | Origin of the public Discover API the recipe pages are built from. Unset falls back to `https://app.tandra.uk`. |
 | `S3_BUCKET`, `CLOUDFRONT_DISTRIBUTION_ID`, `AWS_DEPLOY_ROLE_ARN`, `AWS_REGION` | GitHub repo variables | Deploy job in `ci-cd.yml` (from `terraform output`). |
 | `AWS_TERRAFORM_ROLE_ARN` | GitHub repo variable | `terraform.yml` plan/apply. |
 | `CLOUDFLARE_API_TOKEN` | GitHub repo secret | `terraform.yml` plan/apply: the `tandra.uk` records in `infra/dns.tf` and `infra/acm.tf`. Scope: Zone:Read + DNS:Edit on `tandra.uk` only. |
@@ -63,17 +65,22 @@ It is only rendered when `SITE_URL` is on `tandra.uk`, and
 `data-domains` stops it sending from any other host. CTAs carry `data-umami-event`
 (`open_app`, `try_without_account`, `view_code`, `report_issue`) with a `placement` property
 (`nav`, `hero`, `open-source`, `footer`). Umami's heatmap recorder
-(`https://app.tandra.uk/pulse/recorder.js`) loads after the tracker and records click positions and
-scroll depth; it only sends once the tracker has a session. The e2e specs set
+(`https://app.tandra.uk/pulse/recorder.js`) records click positions and scroll depth; it only sends once the
+tracker has a session. It is ~60 KB of script that cost ~3 s of main-thread time on Lighthouse's throttled phone,
+so it loads on the visitor's first scroll, tap or key press rather than with the page. The e2e specs set
 `localStorage['umami.disabled']` so the live smoke run isn't counted. Instance setup:
 `umami/README.md` in the `foundry` repo.
 
 ## CI / deploy
 
 - `pull-request.yml`: lint, test (+ typecheck), e2e (Chromium), Fallow audit.
-- `ci-cd.yml` (push to `main`): lint + test → build → semantic-release and deploy. Deploy assumes
-  `gha-deploy` via OIDC, `aws s3 sync`s `dist/` in three passes (`_astro/*` immutable, `images/*`
-  1h, everything else no-cache), then invalidates `/*`.
+- `ci-cd.yml` (push to `main`, nightly at 03:23 UTC, manual): lint + test → build → semantic-release (pushes only)
+  and deploy. Deploy assumes `gha-deploy` via OIDC, `aws s3 sync`s `dist/` in four passes (`_astro/*` immutable,
+  `images/*` 1h, `recipe/*` cached by CloudFront for a day with `s-maxage`, everything else no-cache), then
+  invalidates `/*`. The nightly run is what refreshes the recipe pages.
+- `lighthouse.yml`: after every successful CI/CD run, Lighthouse CI (mobile profile, throttled 4G) runs 3 times on
+  `/`, `/recipe/` and one recipe page of the live site and fails below performance 90 or SEO 95
+  (`lighthouserc.json`). Reports go to LHCI's temporary public storage; the links are in the job log.
 - `terraform.yml`: `infra/**` PRs from this repo get a plan comment; pushes to `main` apply.
 
 ## Status
@@ -87,7 +94,11 @@ scroll depth; it only sends once the tracker has a session. The e2e specs set
   lived on `tandra.uk` before it moved) and returning users (the `tandra_app` cookie the app sets
   on `tandra.uk`) there; `/?home` always shows this page.
   `public/sw.js` replaces the service worker the app registered on this origin before it moved.
-- Keystatic and the blog scaffolding were removed: the page is a single hand-written landing page.
+- Keystatic and the blog scaffolding were removed: the landing page is hand-written.
+- `/recipe/` and `/recipe/<slug>/` are static pages built from the first 50 recipes of the app's public Discover
+  API (`src/lib/discover.ts`), with Recipe JSON-LD, the source credit and licence, and an "Add to my list" link to
+  the recipe in the app. They live under `/recipe/`, not `/recipes/`, because the CloudFront function still sends
+  `/recipes/*` (an old app deep link) to the app. A failed API call fails the build, so a deploy never drops them.
 - App screenshots in `src/assets/screens` are captured from the live app on a phone-sized viewport (390x844 @3x),
   signed in as the `samtandra` demo account (lists shared with `alextandra` and `jotandra`). Each has a `-dark`
   twin captured in the app's dark theme; `Phone.astro` serves it when the visitor's system is in dark mode.

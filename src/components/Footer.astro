@@ -13,6 +13,7 @@ const year = new Date().getFullYear();
             <a href={`${siteConfig.repoUrl}/issues`} data-umami-event="report_issue" data-umami-event-placement="footer"
                 >Issues</a
             >
+            <a href="/recipe/">Recipes</a>
             <a href="/privacy">Privacy</a>
         </nav>
     </div>
@@ -37,6 +38,12 @@ const year = new Date().getFullYear();
     .footer p {
         margin: 0;
         color: var(--ink-soft);
+    }
+
+    .footer nav {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.5rem 1.25rem;
     }
 
     .footer a {
