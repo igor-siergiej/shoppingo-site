@@ -88,7 +88,9 @@ scroll depth; it only sends once the tracker has a session. The e2e specs set
   on `tandra.uk`) there; `/?home` always shows this page.
   `public/sw.js` replaces the service worker the app registered on this origin before it moved.
 - Keystatic and the blog scaffolding were removed: the page is a single hand-written landing page.
-- App screenshots in `src/assets/screens` are captured from the live app on a phone-sized viewport (390x844 @3x).
+- App screenshots in `src/assets/screens` are captured from the live app on a phone-sized viewport (390x844 @3x),
+  signed in as the `samtandra` demo account (lists shared with `alextandra` and `jotandra`). Each has a `-dark`
+  twin captured in the app's dark theme; `Phone.astro` serves it when the visitor's system is in dark mode.
 
 ## Credits
 
